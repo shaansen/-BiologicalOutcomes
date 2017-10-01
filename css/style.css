@@ -1,21 +1,31 @@
-body {
-  font: 11px Verdana;
+svg {
+  font: 10px sans-serif;
+  padding: 10px;
 }
 
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
+.axis,
+.frame {
   shape-rendering: crispEdges;
 }
 
-.dot {
-  stroke: #000;
+.axis line {
+  stroke: #ddd;
 }
 
-.tooltip {
-  position: absolute;
-  width: 200px;
-  height: 28px;
-  pointer-events: none;
+.axis path {
+  display: none;
+}
+
+.cell text {
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.frame {
+  fill: none;
+  stroke: #aaa;
+}
+
+circle {
+  fill-opacity: .7;
 }
