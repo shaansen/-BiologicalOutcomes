@@ -1,31 +1,31 @@
 svg {
   font: 10px sans-serif;
-  padding: 10px;
 }
 
-.axis,
-.frame {
+.background path {
+  fill: none;
+  stroke: #ddd;
   shape-rendering: crispEdges;
 }
 
-.axis line {
-  stroke: #ddd;
-}
-
-.axis path {
-  display: none;
-}
-
-.cell text {
-  font-weight: bold;
-  text-transform: capitalize;
-}
-
-.frame {
+.foreground path {
   fill: none;
-  stroke: #aaa;
+  /*stroke: steelblue;*/
 }
 
-circle {
-  fill-opacity: .7;
+.brush .extent {
+  fill-opacity: .3;
+  stroke: #fff;
+  shape-rendering: crispEdges;
+}
+
+.axis line,
+.axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
 }
