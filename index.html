@@ -3,21 +3,28 @@
     <meta charset="utf-8">
     <head>
         <link rel="stylesheet" href="css/style.css">
+        <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
     </head>
 
     <body>
-    	Select Treatment Type : 
-    	<input type="checkbox" id="TreatmentType" value="AIP"> AIP
-    	<input type="checkbox" id="TreatmentType" value="AIPV"> AIPV
-    	<input type="checkbox" id="TreatmentType" value="AIV"> AIV
-    	<input type="checkbox" id="TreatmentType" value="APV"> APV
-    	<input type="checkbox" id="TreatmentType" value="IPV"> IPV
-    	<input type="checkbox" id="TreatmentType" value="untreated"> untreated
-    	<br />
-    	Select Tissue Type : 
-    	<input type="checkbox" id="TissueType" value="Lymph"> Lymph
-    	<input type="checkbox" id="TissueType" value="Tumor"> Tumor
-    	
+    	<nav>
+    		<h1>Visualization of Biological Outcomes</h1>
+	    	Select Treatment Type : 
+	    	<br /><input type="checkbox" id="TreatmentType" value="AIP"> AIP
+	    	<br /><input type="checkbox" id="TreatmentType" value="AIPV"> AIPV
+	    	<br /><input type="checkbox" id="TreatmentType" value="AIV"> AIV
+	    	<br /><input type="checkbox" id="TreatmentType" value="APV"> APV
+	    	<br /><input type="checkbox" id="TreatmentType" value="IPV"> IPV
+	    	<br /><input type="checkbox" id="TreatmentType" value="untreated"> untreated
+	    	<br />
+	    	<hr>
+	    	Select Tissue Type : 
+	    	<br /><input type="checkbox" id="TissueType" value="Lymph"> Lymph
+	    	<br /><input type="checkbox" id="TissueType" value="Tumor"> Tumor
+	    	<hr>
+    	</nav>
+    	<div class="viz">
+    	</div>
     	<script src="http://d3js.org/d3.v3.min.js"></script>
         <script src="index.js"></script>
     </body>

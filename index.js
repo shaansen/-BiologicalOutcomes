@@ -10,7 +10,7 @@ var line = d3.svg.line(),
     background,
     foreground;
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select(".viz").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
@@ -24,15 +24,15 @@ d3.selectAll("#TissueType").on("change",update);
 
 
 function update(){
-
-  console.log("Updating this page again and again")
   var treatmentChoices = [];
   var tissueChoices = [];
+  let cb = []
   
   d3.selectAll("#TreatmentType").each(function(d){
     cb = d3.select(this);
     if(cb.property("checked")){
       treatmentChoices.push(cb.property("value"));
+    } else {
     }
   });
 
@@ -40,29 +40,30 @@ function update(){
     cb = d3.select(this);
     if(cb.property("checked")){
       tissueChoices.push(cb.property("value"));
+    } else {
     }
   });
   
   d3.csv("data/data2016.csv", function(error, mfi) { 
-    
+
     if(treatmentChoices.length !== 0 || tissueChoices.length !== 0) {
       let sampleArray = mfi.filter(d => {
-        //console.log(treatmentChoices.includes(d["Treatment"]));
-        return treatmentChoices.includes(d["Treatment"]) || tissueChoices.includes(d["Tissue_Type"])
+        return treatmentChoices.includes(d["Treatment"]) && tissueChoices.includes(d["Tissue_Type"])
       })
       mfi = sampleArray
     } else {
       mfi = []
     }
     
-    // Extract the list of dimensions and create a scale for each.
+  
+
+    let avoidColumns = ["index","mouse_sample","Tissue_Type","Treatment"]
     x.domain(dimensions = d3.keys(mfi[0]).filter(function(d) {
-      return (d != "mouse_sample" && d != "Tissue_Type" && d != "Treatment") && (y[d] = d3.scale.linear()
+      return (!avoidColumns.includes(d)) && (y[d] = d3.scale.linear()
           .domain(d3.extent(mfi, function(p) { return +p[d]; }))
           .range([height, 0]));
     }));
 
-    // Add grey background lines for context.
     background = svg.append("g")
       .attr("class", "background")
       .selectAll("path")
@@ -70,18 +71,17 @@ function update(){
       .enter().append("path")
       .attr("d", path);
 
-    // Add blue foreground lines for focus.
     foreground = svg.append("g")
       .attr("class", "foreground")
       .selectAll("path")
       .data(mfi)
       .enter().append("path")
       .attr("d", path)
-      .attr("stroke", function(d,i) {
-        return "rgb("+(i*5)%255+","+(i*2)%255+","+(i*4)%255+")";
+      .attr("stroke", function(d) {
+        let i = d["index"]
+        return "rgb("+(i*10)%255+","+(i*10)%255+","+(i)%255+",0.1)";
       })
 
-    // Add a group element for each dimension.
     var g = svg.selectAll(".dimension")
       .data(dimensions)
       .enter().append("g")
@@ -104,7 +104,9 @@ function update(){
       .selectAll("rect")
       .attr("x", -8)
       .attr("width", 16);
+
   });
+
 }
 
 // Returns the path for a given data point.
