@@ -27,7 +27,7 @@ function update(){
   var treatmentChoices = [];
   var tissueChoices = [];
   let cb = []
-  
+
   d3.selectAll("#TreatmentType").each(function(d){
     cb = d3.select(this);
     if(cb.property("checked")){
@@ -43,8 +43,8 @@ function update(){
     } else {
     }
   });
-  
-  d3.csv("data/data2016.csv", function(error, mfi) { 
+
+  d3.csv("data/data2016.csv", function(error, mfi) {
 
     if(treatmentChoices.length !== 0 || tissueChoices.length !== 0) {
       let sampleArray = mfi.filter(d => {
@@ -54,8 +54,8 @@ function update(){
     } else {
       mfi = []
     }
-    
-  
+
+
 
     let avoidColumns = ["index","mouse_sample","Tissue_Type","Treatment"]
     x.domain(dimensions = d3.keys(mfi[0]).filter(function(d) {
@@ -63,6 +63,8 @@ function update(){
           .domain(d3.extent(mfi, function(p) { return +p[d]; }))
           .range([height, 0]));
     }));
+
+    svg.selectAll("g").remove();
 
     background = svg.append("g")
       .attr("class", "background")
@@ -95,8 +97,8 @@ function update(){
           return "rgb(0,120,120)";
         } else {
           return "rgb(120,0,120)";
-        } 
-        
+        }
+
       })
 
     var g = svg.selectAll(".dimension")
