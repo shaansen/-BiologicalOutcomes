@@ -75,11 +75,28 @@ function update(){
       .attr("class", "foreground")
       .selectAll("path")
       .data(mfi)
-      .enter().append("path")
+
+    foreground.exit().remove()
+
+    foreground.enter().append("path")
       .attr("d", path)
       .attr("stroke", function(d) {
         let i = d["index"]
-        return "rgb("+(i*10)%255+","+(i*10)%255+","+(i)%255+",0.1)";
+        console.log(d["Treatment"])
+        if(d["Treatment"]==="AIP") {
+          return "rgb(255,0,0)";
+        } else if(d["Treatment"]==="AIPV") {
+          return "rgb(0,255,0)";
+        } else if(d["Treatment"]==="AIV") {
+          return "rgb(0,0,255)";
+        } else if(d["Treatment"]==="APV") {
+          return "rgb(120,120,0)";
+        } else if(d["Treatment"]==="IPV") {
+          return "rgb(0,120,120)";
+        } else {
+          return "rgb(120,0,120)";
+        } 
+        
       })
 
     var g = svg.selectAll(".dimension")
