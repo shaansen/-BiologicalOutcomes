@@ -1,0 +1,46 @@
+<html>
+  <head>
+    <script src="https://d3js.org/d3.v4.0.0-alpha.40.min.js"></script>
+  </head>
+  <body>
+    <input type="checkbox" class="myCheckbox" value="thor"> test 1 (thor)
+    <input type="checkbox" class="myCheckbox" value="spiderman"> test 2 (spiderman)
+    <input type="checkbox" class="myCheckbox" value="superman"> test 3 (superman)
+
+    <div id="content"></div>
+    <script>    
+      data = ["batman","thor","superman","spiderman","ironman"];
+      table = d3.select("#content")
+          .append("table")
+          .property("border","1px");
+      d3.selectAll(".myCheckbox").on("change",update);
+      update();
+      
+      
+      function update(){
+        var choices = [];
+        d3.selectAll(".myCheckbox").each(function(d){
+          cb = d3.select(this);
+          if(cb.property("checked")){
+            choices.push(cb.property("value"));
+          }
+        });
+      
+        if(choices.length > 0){
+          newData = data.filter(function(d,i){return choices.includes(d);});
+        } else {
+          newData = data;     
+        } 
+        
+        newRows = table.selectAll("tr")
+            .data(newData,function(d){return d;});
+        newRows.enter()
+          .append("tr")
+          .append("td")
+          .text(function(d){return d;});    
+        newRows.exit()
+          .remove();      
+      }
+    </script>
+  </body>
+</html>
