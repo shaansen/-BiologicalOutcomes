@@ -14,8 +14,25 @@
 
 </style>
 <svg width="1500" height="700"></svg>
+<form id="form" method="post" enctype="multipart/form-data" action="/submit">
+  <input id="file-input" type="file" name="uploadFile" />
+  <input type="submit" value="Submit">
+</form>
 <script src="http://d3js.org/d3.v4.min.js"></script>
 <script>
+
+function upload() {
+    fetch('/submit', {
+        method: 'post',
+        body: new FormData(document.querySelector('#form'))
+    }).then(function json(response) {
+        return response.json()
+    }).then(function(data) {
+        window.console.log('Request succeeded with JSON response', data);
+    }).catch(function(error) {
+        window.console.log('Request failed', error);
+    });
+}
 
 var svg = d3.select("svg"),
     margin = {top: 20, right: 80, bottom: 30, left: 50},
