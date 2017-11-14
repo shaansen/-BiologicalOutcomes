@@ -2,8 +2,8 @@
 // Copyright (c) 2012, Kai Chang
 // Released under the BSD License: http://opensource.org/licenses/BSD-3-Clause
 
-var width = document.body.clientWidth,
-    height = d3.max([document.body.clientHeight-540, 240]);
+var width = document.body.clientWidth-300,
+    height = d3.max([document.body.clientHeight-20, 240]);
 
 var m = [60, 0, 10, 0],
     w = width - m[1] - m[3],
@@ -24,12 +24,18 @@ var m = [60, 0, 10, 0],
     excluded_groups = [];
 
 var colors = {
-  "AIPV": [185,56,73],
-  "AIP": [41,75,61],
-  "AIV": [325,50,39],
-  "IPV": [318,65,67],
-  "APV": [271,39,57],
-  "untreated": [110,57,70]
+  "AIPV_Tumor": [220,60,50],
+  "AIP_Tumor": [12,85,47],
+  "AIV_Tumor": [36,100,50],
+  "IPV_Tumor": [124,81,33],
+  "APV_Tumor": [300,100,30],
+  "untreated_Tumor": [194,100,39],
+  "AIPV_Lymph": [340, 69, 57],
+  "AIP_Lymph": [84, 100, 33],
+  "AIV_Lymph": [0, 60, 45],
+  "IPV_Lymph": [210, 51, 39],
+  "APV_Lymph": [300, 38, 43],
+  "untreated_Lymph": [173, 67, 40],
 };
 
 // Scale chart and canvas height
@@ -71,7 +77,7 @@ d3.csv("data2016.csv", function(raw_data) {
   // Convert quantitative scales to floats
   data = raw_data.map(function(d) {
     for (var k in d) {
-      if (!_.isNaN(raw_data[0][k] - 0) && k != 'id') {
+      if (!_.isNaN(raw_data[0][k] - 0) && k != 'id' && k != 'index') {
         d[k] = parseFloat(d[k]) || 0;
       }
     };
@@ -98,7 +104,6 @@ d3.csv("data2016.csv", function(raw_data) {
         d3.select("#foreground").style("opacity", "0.35");
       })
       .on("drag", function(d) {
-        console.log(d)
         dragging[d] = Math.min(w, Math.max(0, this.__origin__ += d3.event.dx));
         dimensions.sort(function(a, b) { return position(a) - position(b); });
         xscale.domain(dimensions);
@@ -210,19 +215,19 @@ function create_legend(colors,brush) {
   // filter by group
   var legend = legend_data
     .enter().append("div")
-      .attr("title", "Hide group")
-      .on("click", function(d) { 
-        // toggle food group
-        if (_.contains(excluded_groups, d)) {
-          d3.select(this).attr("title", "Hide group")
-          excluded_groups = _.difference(excluded_groups,[d]);
-          brush();
-        } else {
-          d3.select(this).attr("title", "Show group")
-          excluded_groups.push(d);
-          brush();
-        }
-      });
+    .attr("title", "Hide group")
+    .on("click", function(d) { 
+      // toggle food group
+      if (_.contains(excluded_groups, d)) {
+        d3.select(this).attr("title", "Hide group")
+        excluded_groups = _.difference(excluded_groups,[d]);
+        brush();
+      } else {
+        d3.select(this).attr("title", "Show group")
+        excluded_groups.push(d);
+        brush();
+      }
+    });
 
   legend
     .append("span")
@@ -244,7 +249,7 @@ function create_legend(colors,brush) {
 // render polylines i to i+render_speed 
 function render_range(selection, i, max, opacity) {
   selection.slice(i,max).forEach(function(d) {
-    path(d, foreground, color(d.Treatment,opacity));
+    path(d, foreground, color(d.Treatment+"_"+d.Tissue_Type,opacity));
   });
 };
 
@@ -267,7 +272,7 @@ function data_table(sample) {
   table
     .append("span")
     .attr("class", "color-block")
-    .style("background", function(d) { return color(d.Treatment,0.85) })
+    .style("background", function(d) { return color(d.Treatment+"_"+d.Tissue_Type,0.85) })
 
   table
     .append("span")
@@ -301,8 +306,8 @@ function selection_stats(opacity, n, total) {
 // Highlight single polyline
 function highlight(d) {
   d3.select("#foreground").style("opacity", "0.25");
-  d3.selectAll(".row").style("opacity", function(p) { return (d.Treatment == p) ? null : "0.3" });
-  path(d, highlighted, color(d.Treatment,1));
+  d3.selectAll(".row").style("opacity", function(p) { return (d.Treatment+"_"+d.Tissue_Type == p) ? null : "0.3" });
+  path(d, highlighted, color(d.Treatment+"_"+d.Tissue_Type,1));
 }
 
 // Remove highlight
@@ -314,6 +319,7 @@ function unhighlight() {
 
 function invert_axis(d) {
   // save extent before inverting
+  console.log(yscale)
   if (!yscale[d].brush.empty()) {
     var extent = yscale[d].brush.extent();
   }
@@ -428,7 +434,7 @@ function brush() {
   var selected = [];
   data
     .filter(function(d) {
-      return !_.contains(excluded_groups, d.Treatment);
+      return !_.contains(excluded_groups, d.Treatment+"_"+d.Tissue_Type);
     })
     .map(function(d) {
       return actives.every(function(p, dimension) {
@@ -453,7 +459,7 @@ function brush() {
 
   // total by food group
   var tallies = _(selected)
-    .groupBy(function(d) { return d.Treatment; })
+    .groupBy(function(d) { return d.Treatment+"_"+d.Tissue_Type; })
 
   // include empty groups
   _(colors).each(function(v,k) { tallies[k] = tallies[k] || []; });
@@ -468,7 +474,7 @@ function brush() {
 
   legend.selectAll(".color-bar")
     .style("width", function(d) {
-      return Math.ceil(600*tallies[d].length/data.length) + "px"
+      return Math.ceil(500*tallies[d].length/data.length) + "px"
     });
 
   legend.selectAll(".tally")
@@ -583,7 +589,7 @@ function actives() {
   var selected = [];
   data
     .filter(function(d) {
-      return !_.contains(excluded_groups, d.Treatment);
+      return !_.contains(excluded_groups, d.Treatment+"_"+d.Tissue_Type);
     })
     .map(function(d) {
     return actives.every(function(p, i) {
@@ -630,7 +636,7 @@ window.onresize = function() {
   d3.select("svg")
       .attr("width", w + m[1] + m[3])
       .attr("height", h + m[0] + m[2])
-    .select("g")
+      .select("g")
       .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
   
   xscale = d3.scale.ordinal().rangePoints([0, w], 1).domain(dimensions);

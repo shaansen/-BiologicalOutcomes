@@ -5,7 +5,7 @@ html, body {
   padding: 0;
 }
 body { 
-  font-family: Ubuntu, Tahoma, Helvetica, sans-serif;
+  font-family: Poppins, sans-serif;
   font-size: 12px;
   line-height: 1.4em;
   background: #f7f7f7;
@@ -28,6 +28,7 @@ svg {
   font-family: Ubuntu, Tahoma, Helvetica, sans-serif;
 }
 canvas, svg {
+
   position: absolute;
   top: 0;
   left: 0;
@@ -88,17 +89,17 @@ canvas, svg {
 .dark .axis text.label {
   fill: #ddd;
 }
-.quarter, .third, .half {
+/*.quarter, .third, .half {
   float: left;
-}
+}*/
 .quarter {
   width: 23%;
   margin: 0 1%;
 }
-.third {
+/*.third {
   width: 31.3%;
   margin: 0 1%;
-}
+}*/
 .half {
   width: 48%;
   margin: 0 1%;
@@ -152,7 +153,7 @@ button#exclude-data:hover {
   cursor: pointer;
 }
 .row:hover {
-  font-size: 16px;
+  font-size: 13px;
   line-height: 1.3em;
 }
 .off {
@@ -211,11 +212,11 @@ button#exclude-data:hover {
 #header button {
   vertical-align: top;
 }
-.controls {
+/*.controls {
   float: right;
   height: 24px;
   line-height: 24px;
-}
+}*/
 
 /* Scrollbars */
 
@@ -238,4 +239,18 @@ button#exclude-data:hover {
 }
 .dark ::-webkit-scrollbar-thumb {
   background: #444;
+}
+
+nav {
+    float: left;
+    max-width: 200px;
+    margin: 0;
+    padding: 1em;
+    background-color: silver;
+}
+
+.viz {
+    border-left: 1px solid gray;
+    padding: 1em;
+    overflow: hidden;
 }
