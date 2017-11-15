@@ -67,6 +67,8 @@ $( document ).ready(function() {
       legend,
       render_speed = 50,
       brush_count = 0,
+      scaleLog = false,
+      currentScale = "linear",
       excluded_groups = [];
 
   var colors = {
@@ -152,11 +154,20 @@ $( document ).ready(function() {
       svg.selectAll("g").remove();
 
       // Extract the list of numerical dimensions and create a scale for each.
-      xscale.domain(dimensions = d3.keys(data[0]).filter(function(k) {
-        return (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.linear()
-          .domain(d3.extent(data, function(d) { return +d[k]; }))
-          .range([h, 0]));
-      }).sort());
+      if(currentScale == "linear"){
+        xscale.domain(dimensions = d3.keys(data[0]).filter(function(k) {
+          return (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.linear()
+            .domain(d3.extent(data, function(d) { return +d[k]; }))
+            .range([h, 0]));
+        }).sort());
+      }
+      else{
+        xscale.domain(dimensions = d3.keys(data[0]).filter(function(k) {
+          return (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.log()
+            .domain(d3.extent(data, function(d) { return +d[k]; }))
+            .range([h, 0]));
+        }).sort());
+      }
 
       // Add a group element for each dimension.
       var g = svg.selectAll(".dimension")
@@ -632,14 +643,28 @@ $( document ).ready(function() {
     // reset yscales, preserving inverted state
     dimensions.forEach(function(d,i) {
       if (yscale[d].inverted) {
-        yscale[d] = d3.scale.linear()
-            .domain(d3.extent(data, function(p) { return +p[d]; }))
-            .range([0, h]);
+        if(currentScale == "linear"){
+          yscale[d] = d3.scale.linear()
+              .domain(d3.extent(data, function(p) { return +p[d]; }))
+              .range([0, h]);
+        }
+        else{
+          yscale[d] = d3.scale.log()
+              .domain(d3.extent(data, function(p) { return +p[d]; }))
+              .range([0, h]);
+        }
         yscale[d].inverted = true;
       } else {
-        yscale[d] = d3.scale.linear()
-            .domain(d3.extent(data, function(p) { return +p[d]; }))
-            .range([h, 0]);
+        if(currentScale == "linear"){
+          yscale[d] = d3.scale.linear()
+              .domain(d3.extent(data, function(p) { return +p[d]; }))
+              .range([h, 0]);
+        }
+        else{
+          yscale[d] = d3.scale.log()
+              .domain(d3.extent(data, function(p) { return +p[d]; }))
+              .range([h, 0]);
+        }
       }
     });
 
@@ -770,6 +795,8 @@ $( document ).ready(function() {
   d3.select("#show-ticks").on("click", show_ticks);
   d3.select("#dark-theme").on("click", dark_theme);
   d3.select("#light-theme").on("click", light_theme);
+  d3.select("#log-scale").on("click", log_scale);
+  d3.select("#linear-scale").on("click", linear_scale);
 
   function hide_ticks() {
     d3.selectAll(".axis g").style("display", "none");
@@ -798,6 +825,21 @@ $( document ).ready(function() {
     d3.selectAll("#light-theme").attr("disabled", "disabled");
     d3.selectAll("#dark-theme").attr("disabled", null);
   }
+
+  function log_scale() {
+    currentScale = "log"
+    d3.selectAll("#linear-scale").attr("disabled", null);
+    d3.selectAll("#log-scale").attr("disabled", true);
+    wasClicked();
+  }
+
+  function linear_scale() {
+    currentScale = "linear"
+    d3.selectAll("#log-scale").attr("disabled", null);
+    d3.selectAll("#linear-scale").attr("disabled", true);
+    wasClicked();
+  }
+
 
   function search(selection,str) {
     pattern = new RegExp(str,"i")

@@ -10,7 +10,7 @@
     <body>
     	<nav>
     		<h1>Visualization of Biological Outcomes</h1>
-        <button title="Zoom in on selected data" id="keep-data" disabled="disabled">Keep</button>
+        <!--<button title="Zoom in on selected data" id="keep-data" disabled="disabled">Keep</button>
         <button title="Remove selected data" id="exclude-data" disabled="disabled">Exclude</button>
         <button title="Export data as CSV" id="export-data">Export</button>
 
@@ -22,12 +22,16 @@
               </div>
             </div>
           </div>
-          Lines at <strong id="opacity"></strong> opacity.
+          Lines at <strong id="opacity"></strong> opacity.-->
           <span class="settings">
             <button id="hide-ticks">Hide Ticks</button>
             <button id="show-ticks" disabled="disabled">Show Ticks</button>
             <button id="dark-theme">Dark</button>
             <button id="light-theme" disabled="disabled">Light</button>
+            <br>
+            <label>Change Scale</label>
+            <button id="log-scale">Log</button>
+            <button id="linear-scale" disabled=true>Linear</button>
           </span>
         </div>
         <div style="clear:both;"></div>
