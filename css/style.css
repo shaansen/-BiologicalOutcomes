@@ -137,7 +137,7 @@ button#keep-data:hover {
 button#exclude-data:hover {
   color: #900;
 }
-#food-list {
+#sample-list {
   width: 100%;
   height: 460px;
   overflow-x: auto;
@@ -253,4 +253,18 @@ nav {
     border-left: 1px solid gray;
     padding: 1em;
     overflow: hidden;
+}
+
+button {
+  font-size: 10px;
+  float: right;
+  width: 50%;
+  font-family: Poppins, sans-serif;
+}
+
+.controls-menu {
+  font-size: 10px;
+  float: right;
+  width: 100%;
+  font-family: Poppins, sans-serif;
 }

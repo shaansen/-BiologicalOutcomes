@@ -341,11 +341,13 @@ $( document ).ready(function() {
       return a[col] < b[col] ? -1 : 1;
     });
 
-    var table = d3.select("#food-list")
+    var table = d3.select("#sample-list")
       .html("")
       .selectAll(".row")
         .data(sample)
         .enter().append("div")
+        .style("width","50%")
+        .style("float",function(d,i) {return i%2===0 ? "right" : "left"})
         .on("mouseover", highlight)
         .on("mouseout", unhighlight);
 
@@ -575,7 +577,7 @@ $( document ).ready(function() {
 
     shuffled_data = _.shuffle(selected);
 
-    data_table(shuffled_data.slice(0,25));
+    data_table(shuffled_data);
 
     ctx.clearRect(0,0,w+1,h+1);
 

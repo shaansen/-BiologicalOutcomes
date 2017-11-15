@@ -5,11 +5,13 @@
     <head>
         <link rel="stylesheet" href="css/style.css">
         <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+        <title>Biological Outcomes</title>
     </head>
 
     <body>
     	<nav>
     		<h1>Visualization of Biological Outcomes</h1>
+        <hr>
         <!--<button title="Zoom in on selected data" id="keep-data" disabled="disabled">Keep</button>
         <button title="Remove selected data" id="exclude-data" disabled="disabled">Exclude</button>
         <button title="Export data as CSV" id="export-data">Export</button>
@@ -23,27 +25,49 @@
             </div>
           </div>
           Lines at <strong id="opacity"></strong> opacity.-->
-          <span class="settings">
-            <button id="hide-ticks">Hide Ticks</button>
-            <button id="show-ticks" disabled="disabled">Show Ticks</button>
-            <button id="dark-theme">Dark</button>
-            <button id="light-theme" disabled="disabled">Light</button>
-            <br>
-            <label>Change Scale</label>
-            <button id="log-scale">Log</button>
-            <button id="linear-scale" disabled=true>Linear</button>
-          </span>
+          <h3>Controls</h3>
+            <div>
+              Change Style<br>
+              <button id="hide-ticks" >Hide Ticks</button>
+              <button id="show-ticks" disabled="disabled" >Show Ticks</button>
+              <br>
+              <button id="dark-theme" >Dark Theme</button>
+              <button id="light-theme" disabled="disabled" >Light Theme</button>
+            </div>
+
+            
+            <div>
+              Change Scale<br>
+              <button id="log-scale" >Log</button>
+              <button id="linear-scale" disabled=true>Linear</button>
+            </div>
+            
+
+            <div>
+              Select Data Source
+              <select class="controls-menu"  id="dataSources">
+                <option value="Loading">Loading</option>
+              </select>
+              <form id="form" method="post" enctype="multipart/form-data" action="/submit">
+                Upload New CSV
+                <input class="controls-menu" id="file-input" type="file" accept=".csv, text/csv"" name="uploadFile" />
+                <input class="controls-menu" type="submit" value="Submit"><br>
+              </form>
+            </div>
+
         </div>
         <div style="clear:both;"></div>
         <div>
+          <hr>
           <div  class="third">
-            <h3>Filter by Treatment Types</h3>
+            <h3>Filter by Treatment/Tissue</h3>
             <p id="legend">
             </p>
           </div>
           <div class="third">
+            <hr>
             <h3>Search by Sample Number<input type="text" id="search" placeholder="Eg. 1-1L"></input></h3>
-            <p id="food-list">
+            <p id="sample-list">
             </p>
           </div>
         <div>
@@ -56,19 +80,7 @@
           <svg></svg>
         </div>
       </div>
-      <div>
-        <p>Select Data Source</p>
-        <select id="dataSources">
-          <option value="Loading">Loading</option>
-        </select>
-      </div>
-      <div>
-        <form id="form" method="post" enctype="multipart/form-data" action="/submit">
-          <p>Upload New CSV</p>
-          <input id="file-input" type="file" accept=".csv, text/csv"" name="uploadFile" />
-          <input type="submit" value="Submit">
-        </form>
-      </div>
+      
     	<script src="http://d3js.org/d3.v3.min.js"></script>
       <script src="http://underscorejs.org/underscore.js"></script>
       <script src="jquery-3.2.1.min.js"></script>
