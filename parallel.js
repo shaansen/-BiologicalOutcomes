@@ -21,6 +21,8 @@ var m = [60, 0, 10, 0],
     legend,
     render_speed = 50,
     brush_count = 0,
+    scaleLog = false,
+    currentScale = "linear",
     excluded_groups = [];
 
 var colors = {
@@ -86,10 +88,12 @@ d3.csv("data2016.csv", function(raw_data) {
 
   // Extract the list of numerical dimensions and create a scale for each.
   xscale.domain(dimensions = d3.keys(data[0]).filter(function(k) {
-    return (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.linear()
+      return (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.linear()
       .domain(d3.extent(data, function(d) { return +d[k]; }))
       .range([h, 0]));
   }).sort());
+
+  
 
   // Add a group element for each dimension.
   var g = svg.selectAll(".dimension")
@@ -319,7 +323,7 @@ function unhighlight() {
 
 function invert_axis(d) {
   // save extent before inverting
-  console.log(yscale)
+  console.log(yscale[d].brush)
   if (!yscale[d].brush.empty()) {
     var extent = yscale[d].brush.extent();
   }
@@ -558,6 +562,8 @@ function update_ticks(d, extent) {
     });
 }
 
+
+
 // Rescale to new dataset domain
 function rescale() {
   // reset yscales, preserving inverted state
@@ -701,6 +707,8 @@ d3.select("#hide-ticks").on("click", hide_ticks);
 d3.select("#show-ticks").on("click", show_ticks);
 d3.select("#dark-theme").on("click", dark_theme);
 d3.select("#light-theme").on("click", light_theme);
+d3.select("#log-scale").on("click", linear_scale);
+d3.select("#linear-scale").on("click", log_scale);
 
 function hide_ticks() {
   d3.selectAll(".axis g").style("display", "none");
@@ -718,8 +726,22 @@ function show_ticks() {
   d3.selectAll("#hide-ticks").attr("disabled", null);
 };
 
+function log_scale() {
+  currentScale = "log"
+  d3.selectAll("#linear-scale").attr("disabled", "disabled");
+  d3.selectAll("#log-scale").attr("disabled", null);
+  
+}
+
+function linear_scale() {
+  currentScale = "linear"
+  d3.selectAll("#log-scale").attr("disabled", "disabled");
+  d3.selectAll("#linear-scale").attr("disabled", null);
+}
+
 function dark_theme() {
   d3.select("body").attr("class", "dark");
+
   d3.selectAll("#dark-theme").attr("disabled", "disabled");
   d3.selectAll("#light-theme").attr("disabled", null);
 }
@@ -729,6 +751,7 @@ function light_theme() {
   d3.selectAll("#light-theme").attr("disabled", "disabled");
   d3.selectAll("#dark-theme").attr("disabled", null);
 }
+
 
 function search(selection,str) {
   pattern = new RegExp(str,"i")
