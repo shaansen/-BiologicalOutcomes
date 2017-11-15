@@ -51,7 +51,7 @@ $( document ).ready(function() {
   var width = document.body.clientWidth-300,
       height = d3.max([document.body.clientHeight-20, 240]);
 
-  var m = [60, 0, 10, 0],
+  var m = [40, 0, 10, 30],
       w = width - m[1] - m[3],
       h = height - m[0] - m[2],
       xscale = d3.scale.ordinal().rangePoints([0, w], 1),
