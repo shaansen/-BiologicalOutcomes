@@ -69,7 +69,8 @@ $( document ).ready(function() {
       brush_count = 0,
       scaleLog = false,
       currentScale = "linear",
-      excluded_groups = [];
+      firstTime = true,
+      included_groups = [];
 
   var colors = {
     "AIPV_Tumor": [220,60,50],
@@ -298,13 +299,14 @@ $( document ).ready(function() {
       .attr("title", "Hide group")
       .on("click", function(d) {
         // toggle food group
-        if (_.contains(excluded_groups, d)) {
+        if (_.contains(included_groups, d)) {
           d3.select(this).attr("title", "Hide group")
-          excluded_groups = _.difference(excluded_groups,[d]);
+          included_groups = _.difference(included_groups,[d]);
           brush();
         } else {
           d3.select(this).attr("title", "Show group")
-          excluded_groups.push(d);
+          included_groups.push(d);
+          firstTime = false
           brush();
         }
       });
@@ -347,7 +349,7 @@ $( document ).ready(function() {
         .data(sample)
         .enter().append("div")
         .style("width","50%")
-        .style("float",function(d,i) {return i%2===0 ? "right" : "left"})
+        .style("float",function(d,i) {return i%2===1 ? "right" : "left"})
         .on("mouseover", highlight)
         .on("mouseout", unhighlight);
 
@@ -516,7 +518,7 @@ $( document ).ready(function() {
     var selected = [];
     data
       .filter(function(d) {
-        return !_.contains(excluded_groups, d.Treatment+"_"+d.Tissue_Type);
+        return firstTime || _.contains(included_groups, d.Treatment+"_"+d.Tissue_Type);
       })
       .map(function(d) {
         return actives.every(function(p, dimension) {
@@ -547,7 +549,7 @@ $( document ).ready(function() {
     _(colors).each(function(v,k) { tallies[k] = tallies[k] || []; });
 
     legend
-      .style("text-decoration", function(d) { return _.contains(excluded_groups,d) ? "line-through" : null; })
+      .style("text-decoration", function(d) { return !(_.contains(included_groups,d) || firstTime) ? "line-through" : null; })
       .attr("class", function(d) {
         return (tallies[d].length > 0)
              ? "row"
@@ -685,7 +687,7 @@ $( document ).ready(function() {
     var selected = [];
     data
       .filter(function(d) {
-        return !_.contains(excluded_groups, d.Treatment+"_"+d.Tissue_Type);
+        return firstTime || _.contains(included_groups, d.Treatment+"_"+d.Tissue_Type);
       })
       .map(function(d) {
       return actives.every(function(p, i) {
