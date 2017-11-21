@@ -817,6 +817,7 @@ $( document ).ready(function() {
   d3.select("#light-theme").on("click", light_theme);
   d3.select("#log-scale").on("click", log_scale);
   d3.select("#linear-scale").on("click", linear_scale);
+  d3.select("#reset").on("click", wasClicked);
 
   function hide_ticks() {
     d3.selectAll(".axis g").style("display", "none");

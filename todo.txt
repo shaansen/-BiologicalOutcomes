@@ -1,4 +1,3 @@
-Reset button to reload vis
 Bring deleted columns back
 Stabilize columns when filtering so they dont move
 show data when filtering
