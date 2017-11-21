@@ -35,13 +35,13 @@
               <button id="light-theme" disabled="disabled" >Light Theme</button>
             </div>
 
-            
+
             <div>
               Change Scale<br>
               <button id="log-scale" >Log</button>
               <button id="linear-scale" disabled=true>Linear</button>
             </div>
-            
+
 
             <div>
               Select Data Source
@@ -50,7 +50,7 @@
               </select>
               <form id="form" method="post" enctype="multipart/form-data" action="/submit">
                 Upload New CSV
-                <input class="controls-menu" id="file-input" type="file" accept=".csv, text/csv"" name="uploadFile" />
+                <input class="controls-menu" id="file-input" type="file" accept=".csv, text/csv" name="uploadFile" />
                 <input class="controls-menu" type="submit" value="Submit"><br>
               </form>
             </div>
@@ -61,6 +61,8 @@
           <hr>
           <div  class="third">
             <h3>Filter by Treatment/Tissue</h3>
+            <button id="deselect">Deselect All</button>
+            <button id="select" >Select All</button>
             <p id="legend">
             </p>
           </div>
@@ -80,7 +82,7 @@
           <svg></svg>
         </div>
       </div>
-      
+
     	<script src="http://d3js.org/d3.v3.min.js"></script>
       <script src="http://underscorejs.org/underscore.js"></script>
       <script src="jquery-3.2.1.min.js"></script>
