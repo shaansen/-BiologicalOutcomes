@@ -1,0 +1,11 @@
+thoughts:
+dispach.on is useful only for d3 compenents. Our d3 specific things are: invert, remove, filter, and reordering columns.
+The state for the other parts can be managed through control panel functions manipulating the url.
+If we can get the .on functions to call control functions. >>>>
+Step 1, make control panel functions do url stuff.
+^I can either reload every time or not. For large datasets this could suck So I'll try not doing that at first 
+Reset needs to set all values to default
+Step 2, get url to effect control panel stuff.
+Have the history.push() thing only happen on button clicks and not initialization too (probably)
+Step 3, add column controls to control panel
+Step 4, add .on functions that connect D3 interactions to Control panel events.

@@ -1,5 +1,27 @@
 Bring deleted columns back
 Stabilize columns when filtering so they dont move
 show data when filtering
-Change control panel color for dark
+Change control panel color for dark theme
 Column reordering change title height
+Save configurations...
+screenshot feature
+Self organizing maps
+After dragging every element off and clicking reset, no data is displayed. This is because dragging every element off causes an error on line 465, in the path function, making it unable to plot anything again until the page is refreshed.
+
+Additional From meeting:
+Save state - https://github.com/vijithassar/d3-history
+XXX Undo -will work with back button 
+Add Multiple search criteria (Query Builder) - make sure it supports searching by number
+Query History Export with metadata
+Perform batch process on multiple data sets
+Log Base 2 scale
+Normalize to Global Mean
+Extra Statistics - mean Median
+Axis filters: Lock, copy/paste, show center/min/max, remove, dont make pixel sized ones
+
+Send info from self organizing maps to parallel coordinates and vis versa
+Collapsable menus
+Support Tsv automatically...!
+Invert entire axis on invert, not just selection box
+Fix resizing
+Do a user study
