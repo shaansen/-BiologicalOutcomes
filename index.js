@@ -44,7 +44,6 @@ var ticks = true,
   searchQuery;
 
 //Functions for Initializing State Section:
-
 function parseQueryString() {
   var query = (window.location.search || '?').substr(1),
       map   = {};
@@ -54,18 +53,69 @@ function parseQueryString() {
   return map;
 }
 
+// function init_hide_ticks() {
+//   d3.selectAll(".axis g").style("display", "none");
+//   //d3.selectAll(".axis path").style("display", "none");
+//   d3.selectAll(".background").style("visibility", "hidden");
+//   d3.selectAll("#hide-ticks").attr("disabled", "disabled");
+//   d3.selectAll("#show-ticks").attr("disabled", null);
+//   ticks = false;
+// };
+
+// function init_show_ticks() {
+//   d3.selectAll(".axis g").style("display", null);
+//   //d3.selectAll(".axis path").style("display", null);
+//   d3.selectAll(".background").style("visibility", null);
+//   d3.selectAll("#show-ticks").attr("disabled", "disabled");
+//   d3.selectAll("#hide-ticks").attr("disabled", null);
+//   ticks = true;
+// };
+
+function init_dark_theme() {
+  d3.select("body").attr("class", "dark");
+  d3.selectAll("#dark-theme").attr("disabled", "disabled");
+  d3.selectAll("#light-theme").attr("disabled", null);
+  theme = "dark";
+}
+
+function init_light_theme() {
+  d3.select("body").attr("class", null);
+  d3.selectAll("#light-theme").attr("disabled", "disabled");
+  d3.selectAll("#dark-theme").attr("disabled", null);
+  theme = "light";
+}
+
+function init_log_scale() {
+  currentScale = "log";
+  d3.selectAll("#linear-scale").attr("disabled", null);
+  d3.selectAll("#log-scale").attr("disabled", true);
+}
+
+function init_linear_scale() {
+  currentScale = "linear";
+  d3.selectAll("#log-scale").attr("disabled", null);
+  d3.selectAll("#linear-scale").attr("disabled", true);
+}
+
+function init_changeDataSource(){
+  dataSource = $('#dataSources option:selected').text();
+  if(dataSource =="Loading"){
+    return;
+  }
+  var data1 = "data/" + dataSource;
+  update(data1);
+}
+// function init_search(selection,str) {
+//   // searchQuery = str;
+//   // insertParam("searchQuery", searchQuery);
+//   //LOL Thisss needs restructured because we need a legit query builder not a temp search. Also this happens with each keystroke
+//   //so changing the url this way is terrible
+//   pattern = new RegExp(str,"i")
+//   return _(selection).filter(function(d) { return pattern.exec(d.mouse_sample); });
+// }
+
 // initialization function to activate on load
 function initialize() {
-  var state
-  // select only the items specified in the URL bar
-  // state = get_state()
-  // item
-  //     .filter(function(d, i) {
-  //         return state.indexOf(d.id) !== -1
-  //     })
-  //     // set UI state
-  //     .call(activate)
-
   //parse url and call control methods to set the state.
   state = parseQueryString();
   if("excluded_groups" in state){
@@ -74,48 +124,66 @@ function initialize() {
   }
   if("dataSource" in state){
     dataSource = state.dataSource;
-    changeDataSource();
   }
   if("currentScale" in state){
     // currentScale = state.currentScale;
     if(state.currentScale == "log") {
-      log_scale();
+      init_log_scale();
     }
     if(state.currentScale == "linear"){
-      linear_scale();
+      init_linear_scale();
     }
   }
   else{
-    linear_scale();
+    init_linear_scale();
   }
   if("ticks" in state){
     console.log("ticks" + state.ticks)
     if(state.ticks == "false") {
-      hide_ticks();
+      console.log("hidding ticks");
+      ticks = false;
     }
     if(state.ticks == "true"){
-      show_ticks();
+      console.log("showing ticks");
+      ticks = true;
     }
   }
   else{
-    show_ticks();
+    console.log("showing ticks");
+    ticks = true;
   }
+  init_changeDataSource();
   if("theme" in state){
     // theme = state.theme;
     if(state.theme == "dark") {
-      dark_theme();
+      init_dark_theme();
     }
     if(state.theme == "light"){
-      light_theme();
+      init_light_theme();
     }
   }
   else{
-    light_theme();
+    init_light_theme();
   }
-  if("searchQuery" in state){
-    searchQuery = state.searchQuery;
-    search(searchQuery);
-  }
+  // if("ticks" in state){
+  //   console.log("ticks" + state.ticks)
+  //   if(state.ticks == "false") {
+  //     console.log("hidding ticks");
+  //     init_hide_ticks();
+  //   }
+  //   if(state.ticks == "true"){
+  //     console.log("showing ticks");
+  //     init_show_ticks();
+  //   }
+  // }
+  // else{
+  //   console.log("showing ticks");
+  //   init_show_ticks();
+  // }
+  // if("searchQuery" in state){
+  //   searchQuery = state.searchQuery;
+  //   init_search(searchQuery);
+  // }
 }
 
 // function reset() {
@@ -244,6 +312,21 @@ function update(dataString){
       .text("Drag or resize this filter");
 
     legend = create_legend(colors,brush);
+
+    if(ticks == false){
+      d3.selectAll(".axis g").style("display", "none");
+      //d3.selectAll(".axis path").style("display", "none");
+      d3.selectAll(".background").style("visibility", "hidden");
+      d3.selectAll("#hide-ticks").attr("disabled", "disabled");
+      d3.selectAll("#show-ticks").attr("disabled", null);
+    }
+    else{
+      d3.selectAll(".axis g").style("display", null);
+      //d3.selectAll(".axis path").style("display", null);
+      d3.selectAll(".background").style("visibility", null);
+      d3.selectAll("#show-ticks").attr("disabled", "disabled");
+      d3.selectAll("#hide-ticks").attr("disabled", null);
+    }
 
     // Render full foreground
     brush();
@@ -879,7 +962,7 @@ function log_scale() {
   d3.selectAll("#log-scale").attr("disabled", true);
   insertParam("currentScale", currentScale);
   //LOL Thisss needs restructured because you cant just obliterate all of the other controls anymore... probably!
-  changeDataSource();
+  init_changeDataSource();
 }
 
 function linear_scale() {
@@ -888,7 +971,7 @@ function linear_scale() {
   d3.selectAll("#linear-scale").attr("disabled", true);
   insertParam("currentScale", currentScale);
   //LOL Thisss needs restructured because you cant just obliterate all of the other controls anymore... probably!
-  changeDataSource();
+  init_changeDataSource();
 }
 
 function changeDataSource(){
@@ -942,7 +1025,8 @@ $( document ).ready(function() {
         }
         dropdown.empty();
         dropdown.options(row);
-        changeDataSource();
+        // initialize state on page load
+        initialize()  
     }
   });
 
@@ -981,14 +1065,24 @@ $( document ).ready(function() {
       .append("svg:g")
       .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
-  d3.selectAll("#dataSources").on("change",changeDataSource);
-        changeDataSource();
-
   // create a d3.history dispatcher object with an "action" method
   dispatcher = d3.history('action');
   
-  // initialize state on page load
-  initialize()
+  d3.select("#keep-data").on("click", keep_data);
+  d3.select("#exclude-data").on("click", exclude_data);
+  d3.select("#export-data").on("click", export_csv);
+  d3.select("#search").on("keyup", brush);
+  d3.selectAll("#dataSources").on("change",changeDataSource);
+  // changeDataSource();
+
+  // Appearance toggles
+  d3.select("#hide-ticks").on("click", hide_ticks);
+  d3.select("#show-ticks").on("click", show_ticks);
+  d3.select("#dark-theme").on("click", dark_theme);
+  d3.select("#light-theme").on("click", light_theme);
+  d3.select("#log-scale").on("click", log_scale);
+  d3.select("#linear-scale").on("click", linear_scale);
+  d3.select("#reset").on("click", changeDataSource);
 
   // initialize state for manual browsing actions
   window.addEventListener('popstate', function(event) {
@@ -1002,18 +1096,5 @@ $( document ).ready(function() {
     }
   })
 
-  d3.select("#keep-data").on("click", keep_data);
-  d3.select("#exclude-data").on("click", exclude_data);
-  d3.select("#export-data").on("click", export_csv);
-  d3.select("#search").on("keyup", brush);
-
-
-  // Appearance toggles
-  d3.select("#hide-ticks").on("click", hide_ticks);
-  d3.select("#show-ticks").on("click", show_ticks);
-  d3.select("#dark-theme").on("click", dark_theme);
-  d3.select("#light-theme").on("click", light_theme);
-  d3.select("#log-scale").on("click", log_scale);
-  d3.select("#linear-scale").on("click", linear_scale);
-  d3.select("#reset").on("click", changeDataSource);
+   
 });
