@@ -23,20 +23,21 @@
     	<nav>
     		<h1>Visualization of Biological Outcomes</h1>
         <hr>
-        <button title="Zoom in on selected data" id="keep-data" disabled="disabled">Keep</button>
-        <button title="Remove selected data" id="exclude-data" disabled="disabled">Exclude</button>
-        <button title="Export data as CSV" id="export-data">Export</button>
-
         <div class="controls">
-          <strong id="rendered-count"></strong>/<strong id="selected-count"></strong>
-          <div class="fillbar">
-            <div id="selected-bar">
-              <div id="rendered-bar">&nbsp;
+          <h3 class="accordion">Controls</h3>
+          <div class="panel">
+            <button title="Zoom in on selected data" id="keep-data" disabled="disabled">Keep</button>
+            <button title="Remove selected data" id="exclude-data" disabled="disabled">Exclude</button>
+            <button title="Export data as CSV" id="export-data">Export</button>
+            <strong id="rendered-count"></strong>/<strong id="selected-count"></strong>
+            <div class="fillbar">
+              <div id="selected-bar">
+                <div id="rendered-bar">&nbsp;
+                </div>
               </div>
             </div>
-          </div>
-          Lines at <strong id="opacity"></strong> opacity.
-          <h3>Controls</h3>
+            Lines at <strong id="opacity"></strong> opacity.
+            
             <div>
               Change Style<br>
               <button id="hide-ticks" >Hide Ticks</button>
@@ -69,29 +70,41 @@
               Reset Vis<br>
               <button id="reset">Reset</button>
             </div>
-
+          </div>
         </div>
+
+
         <div style="clear:both;"></div>
+
+
         <div>
           <hr>
           <div  class="third">
-            <h3>Filter by Treatment/Tissue</h3>
-            <button id="deselect">Deselect All</button>
-            <button id="select" >Select All</button>
-            <p id="legend">
-            </p>
+            <h3 class="accordion">Filter by Treatment/Tissue</h3>
+            <div class="panel">
+              <button id="deselect">Deselect All</button>
+              <button id="select" >Select All</button>
+              <p id="legend">
+              </p>
+            </div>
           </div>
+          <hr>
           <div  class="third">
-            <h3>Column Control</h3>
-            <ul id="columnControl">
-              <li id="column" class="ui-state-default">Loading</li>
-            </ul>
+            <h3 class="accordion">Column Control</h3>
+            <div class="panel">
+              <ul id="columnControl">
+                <li id="column" class="ui-state-default">Loading</li>
+              </ul>
+            </div>
           </div>
           <div class="third">
             <hr>
-            <h3>Search by Sample Number<input  class="controls-menu" type="text" id="search" placeholder="Eg. 1-1L"></input></h3>
-            <p id="sample-list">
-            </p>
+            <h3 class="accordion">Search by Sample Number</h3>
+            <div class="panel">
+              <input  class="controls-menu" type="text" id="search" placeholder="Eg. 1-1L"></input>
+              <p id="sample-list">
+              </p>
+            </div>  
           </div>
         <div>
       </nav>
