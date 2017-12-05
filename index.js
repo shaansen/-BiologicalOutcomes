@@ -15,6 +15,7 @@ var svg,
   background,
   highlighted,
   dimensions,
+  allDimensions,
   legend,
   render_speed = 50,
   brush_count = 0,
@@ -41,6 +42,7 @@ var ticks = true,
   currentScale = "linear",
   dataSource,
   excluded_groups = [],
+  excluded_columns = [],
   searchQuery;
 
 //Functions for Initializing State Section:
@@ -53,23 +55,63 @@ function parseQueryString() {
   return map;
 }
 
-// function init_hide_ticks() {
-//   d3.selectAll(".axis g").style("display", "none");
-//   //d3.selectAll(".axis path").style("display", "none");
-//   d3.selectAll(".background").style("visibility", "hidden");
-//   d3.selectAll("#hide-ticks").attr("disabled", "disabled");
-//   d3.selectAll("#show-ticks").attr("disabled", null);
-//   ticks = false;
-// };
+function createColumns() {
+  // simple data table
+  // function data_table(sample) {
+  // var table = d3.select("#columnControl")
+  //   .html("")
+  //   .selectAll(".row")
+  //     .data(allDimensions)
+  //     .enter().append("li")
+  //     .attr("class", "ui-state-default checked")
+  //     .attr("id", "column");
+  // table
+  //   .text(function(d) {
+  //     if(dimensions.includes(d)){
+  //       $(this).attr("class", "ui-state-default")
+  //     }
+  //     return d; 
+  //   })
+  var table = d3.select("#columnControl")
+  .html("")
+  .selectAll(".row")
+    .data(dimensions)
+    .enter().append("li")
+    .attr("class", "ui-state-default")
+    .attr("id", "column")
+    .text(function(d) {
+      return d; 
+    });
+    excluded_columns = _.difference(allDimensions, [dimensions]); 
+  table
+    .data(excluded_columns)
+    .enter().append("li")
+    .attr("class", "ui-state-default checked")
+    .attr("id", "column")
+    .text(function(d) {
+      return d; 
+    });
+  
+  d3.selectAll("#column").on("click", toggleColumns);
+}
 
-// function init_show_ticks() {
-//   d3.selectAll(".axis g").style("display", null);
-//   //d3.selectAll(".axis path").style("display", null);
-//   d3.selectAll(".background").style("visibility", null);
-//   d3.selectAll("#show-ticks").attr("disabled", "disabled");
-//   d3.selectAll("#hide-ticks").attr("disabled", null);
-//   ticks = true;
-// };
+  // function init_hide_ticks() {
+  //   d3.selectAll(".axis g").style("display", "none");
+  //   //d3.selectAll(".axis path").style("display", "none");
+  //   d3.selectAll(".background").style("visibility", "hidden");
+  //   d3.selectAll("#hide-ticks").attr("disabled", "disabled");
+  //   d3.selectAll("#show-ticks").attr("disabled", null);
+  //   ticks = false;
+  // };
+
+  // function init_show_ticks() {
+  //   d3.selectAll(".axis g").style("display", null);
+  //   //d3.selectAll(".axis path").style("display", null);
+  //   d3.selectAll(".background").style("visibility", null);
+  //   d3.selectAll("#show-ticks").attr("disabled", "disabled");
+  //   d3.selectAll("#hide-ticks").attr("disabled", null);
+  //   ticks = true;
+  // };
 
 function init_dark_theme() {
   d3.select("body").attr("class", "dark");
@@ -120,7 +162,16 @@ function initialize() {
   state = parseQueryString();
   if("excluded_groups" in state){
     excluded_groups = decodeURIComponent(state.excluded_groups).split(",");
-    console.log(excluded_groups);
+  }
+  // if("excluded_columns" in state){
+  //   excluded_columns = decodeURIComponent(state.excluded_columns).split(",");
+  //   dimensions = _.difference(dimensions, [excluded_columns]);
+  // }
+  if("dimensions" in state){
+    dimensions = decodeURIComponent(state.dimensions).split(",");
+  }
+  else{
+    dimensions = null;
   }
   if("dataSource" in state){
     dataSource = state.dataSource;
@@ -138,18 +189,18 @@ function initialize() {
     init_linear_scale();
   }
   if("ticks" in state){
-    console.log("ticks" + state.ticks)
+    // console.log("ticks" + state.ticks)
     if(state.ticks == "false") {
-      console.log("hidding ticks");
+      // console.log("hidding ticks");
       ticks = false;
     }
     if(state.ticks == "true"){
-      console.log("showing ticks");
+      // console.log("showing ticks");
       ticks = true;
     }
   }
   else{
-    console.log("showing ticks");
+    // console.log("showing ticks");
     ticks = true;
   }
   init_changeDataSource();
@@ -165,21 +216,6 @@ function initialize() {
   else{
     init_light_theme();
   }
-  // if("ticks" in state){
-  //   console.log("ticks" + state.ticks)
-  //   if(state.ticks == "false") {
-  //     console.log("hidding ticks");
-  //     init_hide_ticks();
-  //   }
-  //   if(state.ticks == "true"){
-  //     console.log("showing ticks");
-  //     init_show_ticks();
-  //   }
-  // }
-  // else{
-  //   console.log("showing ticks");
-  //   init_show_ticks();
-  // }
   // if("searchQuery" in state){
   //   searchQuery = state.searchQuery;
   //   init_search(searchQuery);
@@ -192,8 +228,8 @@ function initialize() {
 
 //D3 Function Section
 function update(dataString){
-  console.log("dataString");
-  console.log(dataString);
+  // console.log("dataString");
+  // console.log(dataString);
 
   // Load the data and visualization
   d3.csv(dataString, function(raw_data) {
@@ -211,19 +247,43 @@ function update(dataString){
     svg.selectAll("g").remove();
 
     // Extract the list of numerical dimensions and create a scale for each.
-    if(currentScale == "linear"){
-      xscale.domain(dimensions = d3.keys(data[0]).filter(function(k) {
-        return (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.linear()
-          .domain(d3.extent(data, function(d) { return +d[k]; }))
-          .range([h, 0]));
-      }).sort());
+    if(dimensions == null){
+      if(currentScale == "linear"){
+        xscale.domain(dimensions = d3.keys(data[0]).filter(function(k) {
+          return (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.linear()
+            .domain(d3.extent(data, function(d) { return +d[k]; }))
+            .range([h, 0]));
+        }).sort());
+      }
+      else{
+        xscale.domain(dimensions = d3.keys(data[0]).filter(function(k) {
+          return (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.log()
+            .domain(d3.extent(data, function(d) { return +d[k]; }))
+            .range([h, 0]));
+        }).sort());
+      }
+      allDimensions = dimensions;
+      // console.log(allDimensions);
     }
     else{
-      xscale.domain(dimensions = d3.keys(data[0]).filter(function(k) {
-        return (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.log()
-          .domain(d3.extent(data, function(d) { return +d[k]; }))
-          .range([h, 0]));
-      }).sort());
+      if(currentScale == "linear"){
+        xscale.domain(dimensions = d3.keys(data[0]).filter(function(k) {
+          return (dimensions.includes(k)) && (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.linear()
+            .domain(d3.extent(data, function(d) { return +d[k]; }))
+            .range([h, 0]));
+        }).sort());
+      }
+      else{
+        xscale.domain(dimensions = d3.keys(data[0]).filter(function(k) {
+          return (dimensions.includes(k)) && (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.log()
+            .domain(d3.extent(data, function(d) { return +d[k]; }))
+            .range([h, 0]));
+        }).sort());
+      }
+      allDimensions = d3.keys(data[0]).filter(function(k) {
+        return (_.isNumber(data[0][k]));
+      })
+      // console.log(allDimensions);
     }
 
     // Add a group element for each dimension.
@@ -267,7 +327,7 @@ function update(dataString){
 
           // remove axis if dragged all the way left
           if (dragging[d] < 12 || dragging[d] > w-12) {
-            remove_axis(d,g);
+            remove_axis(d);
           }
 
           // TODO required to avoid a bug
@@ -312,6 +372,8 @@ function update(dataString){
       .text("Drag or resize this filter");
 
     legend = create_legend(colors,brush);
+    
+    createColumns();
 
     if(ticks == false){
       d3.selectAll(".axis g").style("display", "none");
@@ -709,7 +771,12 @@ function update_ticks(d, extent) {
 
   brush_count++;
 
-  show_ticks();
+  // if(ticks){
+  //   init_show_ticks();
+  // }
+  // else{
+  //   init_hide_ticks();
+  // }
 
   // update axes
   d3.selectAll(".axis")
@@ -873,13 +940,13 @@ function exclude_data() {
   rescale();
 }
 
-function remove_axis(d,g) {
-  dimensions = _.difference(dimensions, [d]);
-  xscale.domain(dimensions);
-  g.attr("transform", function(p) { return "translate(" + position(p) + ")"; });
-  g.filter(function(p) { return p == d; }).remove();
-  update_ticks();
-}
+// function remove_axis(d,g) {
+//   dimensions = _.difference(dimensions, [d]);
+//   xscale.domain(dimensions);
+//   g.attr("transform", function(p) { return "translate(" + position(p) + ")"; });
+//   g.filter(function(p) { return p == d; }).remove();
+//   update_ticks();
+// }
 
 //Util Function Section
 //Change Url
@@ -890,7 +957,7 @@ function insertParam(key, value) {
   if (kvp == '') {
       // document.location.search = '?' + key + '=' + value;
       var url = '?' + key + '=' + value;
-      console.log(url);
+      // console.log(url);
       if (window && window.history) {
         window.history.pushState(null, null, url);
       }
@@ -912,7 +979,7 @@ function insertParam(key, value) {
     // //this will reload the page, it's likely better to store this until finished
     // document.location.search = kvp.join('&');
     var url = '?' + kvp.join('&');
-    console.log(url);
+    // console.log(url);
     if (window && window.history) {
       window.history.pushState(null, null, url);
     }
@@ -961,7 +1028,6 @@ function log_scale() {
   d3.selectAll("#linear-scale").attr("disabled", null);
   d3.selectAll("#log-scale").attr("disabled", true);
   insertParam("currentScale", currentScale);
-  //LOL Thisss needs restructured because you cant just obliterate all of the other controls anymore... probably!
   init_changeDataSource();
 }
 
@@ -970,7 +1036,6 @@ function linear_scale() {
   d3.selectAll("#log-scale").attr("disabled", null);
   d3.selectAll("#linear-scale").attr("disabled", true);
   insertParam("currentScale", currentScale);
-  //LOL Thisss needs restructured because you cant just obliterate all of the other controls anymore... probably!
   init_changeDataSource();
 }
 
@@ -981,8 +1046,50 @@ function changeDataSource(){
   }
   var data1 = "data/" + dataSource;
   insertParam("dataSource", dataSource);
-  //LOL Thisss needs restructured because you cant just obliterate all of the other controls anymore... probably!
   update(data1);
+}
+
+function toggleColumns() {
+  if($(this).hasClass('noclick')){
+    $(this).removeClass('noclick');
+  }
+  else{
+    if($(this).hasClass('checked')) { 
+      $(this).removeClass('checked');
+      add_axis($(this).text());
+    } else { 
+      $(this).addClass('checked');
+      remove_axis($(this).text());
+    }
+  }
+}
+
+function remove_axis(d) {
+  var g = svg.selectAll(".dimension");
+  // console.log("removing: " + d);
+  excluded_columns.push(d);
+  dimensions = _.difference(dimensions, [d]);
+  xscale.domain(dimensions);
+  g.attr("transform", function(p) { return "translate(" + position(p) + ")"; });
+  g.filter(function(p) { return p == d; }).remove();
+  // insertParam("excluded_columns", excluded_columns.join(","));
+  insertParam("dimensions", dimensions.join(","));
+  // update_ticks();
+  init_changeDataSource();
+}
+
+function add_axis(d) {
+  var g = svg.selectAll(".dimension");
+  // console.log("adding: " + d);
+  excluded_columns = _.difference(excluded_columns, [d]);
+  dimensions.push(d);
+  xscale.domain(dimensions);
+  g.attr("transform", function(p) { return "translate(" + position(p) + ")"; });
+  g.filter(function(p) { return p == d; }).remove();
+  // insertParam("excluded_columns", excluded_columns.join(","));
+  insertParam("dimensions", dimensions.join(","));
+  // update_ticks();
+  init_changeDataSource();
 }
 
 function search(selection,str) {
@@ -1012,8 +1119,7 @@ $( document ).ready(function() {
               row.push($(this).attr('href'));
             }
         });
-        // console.log("row");
-        console.log(row);
+        // console.log(row);
         var dropdown = $('#dataSources');
         dropdown.options = function (data) {
             var self = this;
@@ -1082,7 +1188,7 @@ $( document ).ready(function() {
   d3.select("#light-theme").on("click", light_theme);
   d3.select("#log-scale").on("click", log_scale);
   d3.select("#linear-scale").on("click", linear_scale);
-  d3.select("#reset").on("click", changeDataSource);
+  d3.select("#reset").on("click", init_changeDataSource);
 
   // initialize state for manual browsing actions
   window.addEventListener('popstate', function(event) {

@@ -5,6 +5,17 @@
     <head>
         <link rel="stylesheet" href="css/style.css">
         <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+        <style>
+          #columnControl { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+          #columnControl li { margin: 0 5px 5px 5px; font-size: 1em; height: 1em; }
+          html>body #columnControl li { height: 1em; line-height: 1em; }
+          .ui-state-highlight { height: 1.5em; line-height: 1.2em; }
+          ul li.checked {
+            background: #888;
+            color: #fff;
+            text-decoration: line-through;
+          }
+        </style>
         <title>Biological Outcomes</title>
     </head>
 
@@ -70,6 +81,12 @@
             <p id="legend">
             </p>
           </div>
+          <div  class="third">
+            <h3>Column Control</h3>
+            <ul id="columnControl">
+              <li id="column" class="ui-state-default">Loading</li>
+            </ul>
+          </div>
           <div class="third">
             <hr>
             <h3>Search by Sample Number<input  class="controls-menu" type="text" id="search" placeholder="Eg. 1-1L"></input></h3>
@@ -91,7 +108,35 @@
       <script src="d3-history.min.js"></script>
       <script src="http://underscorejs.org/underscore.js"></script>
       <script src="jquery-3.2.1.min.js"></script>
+      <script src="jquery-ui.min.js"></script>
       <script src="index.js"></script>
+      <script>
+        $( function() {
+          $( "#columnControl" ).sortable({
+            // placeholder: "ui-state-highlight",
+            delay: 150,
+            // handle: ".handle",
+            start: function(event, ui){
+              ui.item.addClass('noclick');
+            }
+            // stop: function(event, ui){
+            //   var data = $(this).sortable('toArray', { attribute: 'value' });
+            //   console.log("data");
+            //   console.log(data);
+            //   // $(this).attr().each(function(index, element) {
+            //   //     var name = $(this).name;
+            //   //     var value = $(this).value;
+            //   //     //Do something with name and value...
+            //   //     console.log(this.name, this.value);
+            //   // });
+            //   var listElements = $sortableList.children();
+            //   console.log("data2");
+            //   console.log(listElements);
+            // }
+          });
+          $( "#columnControl" ).disableSelection();
+        } );
+      </script>
       <div class="result" style="display: none">
       </div>
     </body>

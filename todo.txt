@@ -9,8 +9,6 @@ Self organizing maps
 After dragging every element off and clicking reset, no data is displayed. This is because dragging every element off causes an error on line 465, in the path function, making it unable to plot anything again until the page is refreshed.
 
 Additional From meeting:
-Save state - https://github.com/vijithassar/d3-history
-XXX Undo -will work with back button 
 Add Multiple search criteria (Query Builder) - make sure it supports searching by number
 Query History Export with metadata
 Perform batch process on multiple data sets
