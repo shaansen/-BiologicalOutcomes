@@ -242,11 +242,19 @@ button#exclude-data:hover {
 }
 
 nav {
-    float: left;
-    max-width: 200px;
-    margin: 0;
-    padding: 1em;
-    background-color: silver;
+  float: left;
+  max-width: 200px;
+  margin: 0;
+  padding: 1em;
+  background-color: silver;
+}
+
+.dark nav {
+  float: left;
+  max-width: 200px;
+  margin: 0;
+  padding: 1em;
+  background-color: #474646;
 }
 
 .viz {
@@ -289,6 +297,6 @@ button.accordion.active, button.accordion:hover {
 /* Style the accordion panel. Note: hidden by default */
 div.panel {
     padding: 0 18px;
-    background-color: white;
+    /* background-color: white; */
     display: none;
 }
