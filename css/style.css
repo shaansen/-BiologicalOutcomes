@@ -1,3 +1,7 @@
+@font-face {
+  font-family: Poppins;
+  src: url('../fonts/Poppins/Poppins-Regular.ttf');
+}
 html, body {
   margin: 0;
   width: 100%;
@@ -274,6 +278,13 @@ button {
   font-size: 10px;
   float: right;
   width: 100%;
+  font-family: Poppins, sans-serif;
+}
+
+.controls-menuSearch {
+  font-size: 10px;
+  float: left;
+  width: 80%;
   font-family: Poppins, sans-serif;
 }
 

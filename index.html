@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <head>
         <link rel="stylesheet" href="css/style.css">
-        <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+        <link rel="stylesheet" href="css/font-awesome.min.css">
+        <!-- <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'> -->
         <style>
           #columnControl { list-style-type: none; margin: 0; padding: 0; width: 60%; }
           #columnControl li { margin: 0 5px 5px 5px; font-size: 1em; height: 1em; }
@@ -101,7 +102,8 @@
             <hr>
             <h3 class="accordion">Search by Sample Number</h3>
             <div class="panel">
-              <input  class="controls-menu" type="text" id="search" placeholder="Eg. 1-1L"></input>
+              <i class="fa fa-plus-square-o fa-2x" style="padding-left: 5px;" aria-hidden="true"></i>
+              <input  class="controls-menuSearch" type="text" id="search" placeholder="Eg. 1-1L"></input>
               <p id="sample-list">
               </p>
             </div>  
@@ -117,9 +119,9 @@
         </div>
       </div>
 
-      <script src="http://d3js.org/d3.v3.min.js"></script>
+      <script src="d3.v3.min.js"></script>
       <script src="d3-history.min.js"></script>
-      <script src="http://underscorejs.org/underscore.js"></script>
+      <script src="underscore.js"></script>
       <script src="jquery-3.2.1.min.js"></script>
       <script src="jquery-ui.min.js"></script>
       <script src="index.js"></script>
