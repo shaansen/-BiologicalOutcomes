@@ -101,15 +101,23 @@ function createColumns() {
     .enter().append("li")
     .attr("class", "ui-state-default")
     .attr("id", "column")
+    .attr("value", function(d) {
+      return d; 
+    })
     .text(function(d) {
       return d; 
     });
-    excluded_columns = _.difference(allDimensions, [dimensions]); 
+    excluded_columns = allDimensions.filter(function(item) {
+      return dimensions.indexOf(item) === -1;
+    });
   table
     .data(excluded_columns)
     .enter().append("li")
     .attr("class", "ui-state-default checked")
     .attr("id", "column")
+    .attr("value", function(d) {
+      return d; 
+    })
     .text(function(d) {
       return d; 
     });
@@ -186,10 +194,6 @@ function initialize() {
   if("excluded_groups" in state){
     excluded_groups = decodeURIComponent(state.excluded_groups).split(",");
   }
-  // if("excluded_columns" in state){
-  //   excluded_columns = decodeURIComponent(state.excluded_columns).split(",");
-  //   dimensions = _.difference(dimensions, [excluded_columns]);
-  // }
   if("dimensions" in state){
     dimensions = decodeURIComponent(state.dimensions).split(",");
   }
@@ -288,27 +292,31 @@ function update(dataString){
         }).sort());
       }
       allDimensions = dimensions;
-      // console.log(allDimensions);
     }
     else{
       if(currentScale == "linear"){
+        var oldDimensions = $.extend(true, [], dimensions);
         xscale.domain(dimensions = d3.keys(data[0]).filter(function(k) {
           return (dimensions.includes(k)) && (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.linear()
             .domain(d3.extent(data, function(d) { return +d[k]; }))
             .range([h, 0]));
-        }).sort());
+        }).sort(function(a, b){
+          return oldDimensions.indexOf(a)-oldDimensions.indexOf(b);
+      }));
       }
       else{
+        var oldDimensions = $.extend(true, [], dimensions);
         xscale.domain(dimensions = d3.keys(data[0]).filter(function(k) {
           return (dimensions.includes(k)) && (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.log()
             .domain(d3.extent(data, function(d) { return +d[k]; }))
             .range([h, 0]));
-        }).sort());
+        }).sort(function(a, b){
+          return oldDimensions.indexOf(a)-oldDimensions.indexOf(b);
+      }));
       }
       allDimensions = d3.keys(data[0]).filter(function(k) {
         return (_.isNumber(data[0][k]));
       })
-      // console.log(allDimensions);
     }
 
     // Add a group element for each dimension.
@@ -346,7 +354,6 @@ function update(dataString){
           } else {
             // reorder axes
             d3.select(this).transition().attr("transform", "translate(" + xscale(d) + ")");
-
             var extent = yscale[d].brush.extent();
           }
 
@@ -357,6 +364,8 @@ function update(dataString){
 
           // TODO required to avoid a bug
           xscale.domain(dimensions);
+          insertParam("dimensions", dimensions.join(","));
+          createColumns();
           update_ticks(d, extent);
 
           // rerender
@@ -1207,8 +1216,30 @@ $( document ).ready(function() {
         }
         dropdown.empty();
         dropdown.options(row);
+        
+        //set up sortable
+        $( function() {
+          $( "#columnControl" ).sortable({
+            // placeholder: "ui-state-highlight",
+            delay: 150,
+            // handle: ".handle",
+            start: function(event, ui){
+              ui.item.addClass('noclick');
+            },
+            stop: function(event, ui){
+              var data = $(this).sortable('toArray', { attribute: 'value' });
+              dimensions = data.filter(function(item) {
+                return excluded_columns.indexOf(item) === -1;
+              });
+              insertParam("dimensions", dimensions.join(","));
+              // update_ticks();
+              init_changeDataSource();
+            }
+          });
+          $( "#columnControl" ).disableSelection();
+        } );
         // initialize state on page load
-        initialize()  
+        initialize()  ;
     }
   });
 

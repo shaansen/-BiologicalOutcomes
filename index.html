@@ -127,31 +127,7 @@
       <script src="jquery-ui.min.js"></script>
       <script src="index.js"></script>
       <script>
-        $( function() {
-          $( "#columnControl" ).sortable({
-            // placeholder: "ui-state-highlight",
-            delay: 150,
-            // handle: ".handle",
-            start: function(event, ui){
-              ui.item.addClass('noclick');
-            }
-            // stop: function(event, ui){
-            //   var data = $(this).sortable('toArray', { attribute: 'value' });
-            //   console.log("data");
-            //   console.log(data);
-            //   // $(this).attr().each(function(index, element) {
-            //   //     var name = $(this).name;
-            //   //     var value = $(this).value;
-            //   //     //Do something with name and value...
-            //   //     console.log(this.name, this.value);
-            //   // });
-            //   var listElements = $sortableList.children();
-            //   console.log("data2");
-            //   console.log(listElements);
-            // }
-          });
-          $( "#columnControl" ).disableSelection();
-        } );
+        
       </script>
       <div class="result" style="display: none">
       </div>
