@@ -65,6 +65,7 @@ var ticks = true,
   dataSource,
   excluded_groups = [],
   excluded_columns = [],
+  inverted_columns = [],
   searchQuery = "";
 
 //Functions for Initializing State Section:
@@ -98,19 +99,15 @@ function createColumns() {
     excluded_columns = allDimensions.filter(function(item) {
       return dimensions.indexOf(item) === -1;
     });
+    console.log("excluded");
+    console.log(excluded_columns);
+    
   //Create the previously removed columns
-  table
-    .data(excluded_columns)
-    .enter().append("li")
-    .attr("class", "ui-state-default checked")
-    .attr("id", "column")
-    .attr("value", function(d) {
-      return d; 
-    })
-    .text(function(d) {
-      return d; 
-    });
-  
+  for(val in excluded_columns){
+    console.log("val: " + excluded_columns[val]);
+    var e = $('<li class="ui-state-default checked" id="column" value="' + excluded_columns[val] + '">' + excluded_columns[val] + '</li>');
+    $('#columnControl').append(e);
+  }
   d3.selectAll("#column").on("click", toggleColumns);
 }
 
@@ -173,15 +170,24 @@ function init_search(){
 function initialize() {
   //parse url and call control methods to set the state.
   state = parseQueryString();
-  if("excluded_groups" in state){
-    excluded_groups = decodeURIComponent(state.excluded_groups).split(",");
-  }
+  // if("excluded_groups" in state){
+  //   excluded_groups = decodeURIComponent(state.excluded_groups).split(",");
+  // }
   //set dimensions to be used for columns
   if("dimensions" in state){
-    dimensions = decodeURIComponent(state.dimensions).split(",");
+    var decoded = decodeURIComponent(state.dimensions);
+    if(decoded.length > 0){
+      dimensions = decoded.split(",");
+    }
   }
   else{
     dimensions = null;
+  }
+  if("inverted_columns"in state){
+    var decoded = decodeURIComponent(state.inverted_columns);
+    if(decoded.length > 0){
+      inverted_columns = decoded.split(",");
+    }
   }
   //set dataSource to load data from
   if("dataSource" in state){
@@ -202,18 +208,14 @@ function initialize() {
   }
   //set ticks visiable or not
   if("ticks" in state){
-    // console.log("ticks" + state.ticks)
     if(state.ticks == "false") {
-      // console.log("hidding ticks");
       ticks = false;
     }
     if(state.ticks == "true"){
-      // console.log("showing ticks");
       ticks = true;
     }
   }
   else{
-    // console.log("showing ticks");
     ticks = true;
   }
   //load the visualization with the variables set above
@@ -261,16 +263,30 @@ function update(dataString){
     if(dimensions == null){
       if(currentScale == "linear"){
         xscale.domain(dimensions = d3.keys(data[0]).filter(function(k) {
-          return (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.linear()
-            .domain(d3.extent(data, function(d) { return +d[k]; }))
-            .range([h, 0]));
+          if(inverted_columns.includes(k)){
+            return (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.linear()
+              .domain(d3.extent(data, function(d) { return +d[k]; }))
+              .range([0, h])) && (yscale[k].inverted = true);
+          }
+          else{
+            return (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.linear()
+              .domain(d3.extent(data, function(d) { return +d[k]; }))
+              .range([h, 0]));
+          }
         }).sort());
       }
       else{
         xscale.domain(dimensions = d3.keys(data[0]).filter(function(k) {
-          return (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.log().base(2)
-            .domain(d3.extent(data, function(d) { return +d[k]; }))
-            .range([h, 0]));
+          if(inverted_columns.includes(k)){
+            return (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.log().base(2)
+              .domain(d3.extent(data, function(d) { return +d[k]; }))
+              .range([0, h])) && (yscale[k].inverted = true);
+          }
+          else{
+            return (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.log().base(2)
+              .domain(d3.extent(data, function(d) { return +d[k]; }))
+              .range([h, 0]));
+          }
         }).sort());
       }
       allDimensions = dimensions;
@@ -279,9 +295,16 @@ function update(dataString){
       if(currentScale == "linear"){
         var oldDimensions = $.extend(true, [], dimensions);
         xscale.domain(dimensions = d3.keys(data[0]).filter(function(k) {
-          return (dimensions.includes(k)) && (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.linear()
-            .domain(d3.extent(data, function(d) { return +d[k]; }))
-            .range([h, 0]));
+          if(inverted_columns.includes(k)){
+            return (dimensions.includes(k)) && (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.linear()
+              .domain(d3.extent(data, function(d) { return +d[k]; }))
+              .range([0, h])) && (yscale[k].inverted = true);
+          }
+          else{
+            return (dimensions.includes(k)) && (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.linear()
+              .domain(d3.extent(data, function(d) { return +d[k]; }))
+              .range([h, 0]));
+          }
         }).sort(function(a, b){
           return oldDimensions.indexOf(a)-oldDimensions.indexOf(b);
       }));
@@ -289,9 +312,16 @@ function update(dataString){
       else{
         var oldDimensions = $.extend(true, [], dimensions);
         xscale.domain(dimensions = d3.keys(data[0]).filter(function(k) {
-          return (dimensions.includes(k)) && (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.log().base(2)
-            .domain(d3.extent(data, function(d) { return +d[k]; }))
-            .range([h, 0]));
+          if(inverted_columns.includes(k)){
+            return (dimensions.includes(k)) && (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.log().base(2)
+              .domain(d3.extent(data, function(d) { return +d[k]; }))
+              .range([0, h])) && (yscale[k].inverted = true);
+          }
+          else{
+            return (dimensions.includes(k)) && (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.log().base(2)
+              .domain(d3.extent(data, function(d) { return +d[k]; }))
+              .range([h, 0]));
+          }
         }).sort(function(a, b){
           return oldDimensions.indexOf(a)-oldDimensions.indexOf(b);
       }));
@@ -337,6 +367,10 @@ function update(dataString){
             // reorder axes
             d3.select(this).transition().attr("transform", "translate(" + xscale(d) + ")");
             var extent = yscale[d].brush.extent();
+            //after drag and drop, update url
+            insertParam("dimensions", dimensions.join(","));
+            //and remake column control
+            createColumns();
           }
 
           // remove axis if dragged all the way left
@@ -346,11 +380,8 @@ function update(dataString){
 
           // TODO required to avoid a bug
           xscale.domain(dimensions);
-          //after drag and drop, update url
-          insertParam("dimensions", dimensions.join(","));
-          //and remake column control
-          createColumns();
-          //and update ticks
+          
+          //update ticks
           update_ticks(d, extent);
 
           // rerender
@@ -576,7 +607,6 @@ function unhighlight() {
 
 function invert_axis(d) {
   // save extent before inverting
-  console.log(yscale)
   if (!yscale[d].brush.empty()) {
     var extent = yscale[d].brush.extent();
   }
@@ -586,13 +616,19 @@ function invert_axis(d) {
       .filter(function(p) { return p == d; })
       .style("text-decoration", null);
     yscale[d].inverted = false;
+    //set inverted_columns
+    inverted_columns = _.difference(inverted_columns, [d]);
   } else {
     yscale[d].range([0, h]);
     d3.selectAll('.label')
       .filter(function(p) { return p == d; })
       .style("text-decoration", "underline");
     yscale[d].inverted = true;
+    //set inverted_columns
+    inverted_columns.push(d);
   }
+  //insert into url and state
+  insertParam("inverted_columns", inverted_columns.join(","));
   return extent;
 }
 
@@ -1071,7 +1107,6 @@ function toggleColumns() {
 //remove column from the vis, the url, and the state
 function remove_axis(d) {
   var g = svg.selectAll(".dimension");
-  // console.log("removing: " + d);
   excluded_columns.push(d);
   dimensions = _.difference(dimensions, [d]);
   xscale.domain(dimensions);
@@ -1086,7 +1121,6 @@ function remove_axis(d) {
 //add column to the vis, the url, and the state
 function add_axis(d) {
   var g = svg.selectAll(".dimension");
-  // console.log("adding: " + d);
   excluded_columns = _.difference(excluded_columns, [d]);
   dimensions.push(d);
   xscale.domain(dimensions);
@@ -1142,7 +1176,6 @@ function removeSearch(){
   //do something about the html
   var parent = $(this).parent(); 
   var str = parent.text();
-  console.log("remove string: "+ str);
   parent.remove();
 
   //now handle the array and the state.
@@ -1174,7 +1207,6 @@ $( document ).ready(function() {
               row.push($(this).attr('href'));
             }
         });
-        // console.log(row);
         var dropdown = $('#dataSources');
         dropdown.options = function (data) {
             var self = this;
