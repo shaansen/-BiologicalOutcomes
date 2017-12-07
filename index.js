@@ -279,7 +279,7 @@ function update(dataString){
       }
       else{
         xscale.domain(dimensions = d3.keys(data[0]).filter(function(k) {
-          return (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.log()
+          return (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.log().base(2)
             .domain(d3.extent(data, function(d) { return +d[k]; }))
             .range([h, 0]));
         }).sort());
@@ -297,7 +297,7 @@ function update(dataString){
       }
       else{
         xscale.domain(dimensions = d3.keys(data[0]).filter(function(k) {
-          return (dimensions.includes(k)) && (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.log()
+          return (dimensions.includes(k)) && (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.log().base(2)
             .domain(d3.extent(data, function(d) { return +d[k]; }))
             .range([h, 0]));
         }).sort());
@@ -834,7 +834,7 @@ function rescale() {
             .range([0, h]);
       }
       else{
-        yscale[d] = d3.scale.log()
+        yscale[d] = d3.scale.log().base(2)
             .domain(d3.extent(data, function(p) { return +p[d]; }))
             .range([0, h]);
       }
@@ -846,7 +846,7 @@ function rescale() {
             .range([h, 0]);
       }
       else{
-        yscale[d] = d3.scale.log()
+        yscale[d] = d3.scale.log().base(2)
             .domain(d3.extent(data, function(p) { return +p[d]; }))
             .range([h, 0]);
       }
