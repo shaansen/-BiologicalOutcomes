@@ -65,7 +65,7 @@ var ticks = true,
   dataSource,
   excluded_groups = [],
   excluded_columns = [],
-  searchQuery;
+  searchQuery = "";
 
 //Functions for Initializing State Section:
 function parseQueryString() {
@@ -169,14 +169,15 @@ function init_changeDataSource(){
   var data1 = "data/" + dataSource;
   update(data1);
 }
-// function init_search(selection,str) {
-//   // searchQuery = str;
-//   // insertParam("searchQuery", searchQuery);
-//   //LOL Thisss needs restructured because we need a legit query builder not a temp search. Also this happens with each keystroke
-//   //so changing the url this way is terrible
-//   pattern = new RegExp(str,"i")
-//   return _(selection).filter(function(d) { return pattern.exec(d.mouse_sample); });
-// }
+
+function init_search(){
+  var arr = searchQuery.split('|');
+  for(str in arr){
+    var e = $('<div id="' + arr[str] + '">' + arr[str] + '<i id="removeSearch" class="fa fa-minus-square-o" style="padding-left: 5px;" aria-hidden="true"></i></div>');
+    $('#query-list').append(e);
+  }
+  d3.selectAll("#removeSearch").on("click", removeSearch);
+}
 
 // initialization function to activate on load
 function initialize() {
@@ -238,10 +239,12 @@ function initialize() {
   else{
     init_light_theme();
   }
-  // if("searchQuery" in state){
-  //   searchQuery = state.searchQuery;
-  //   init_search(searchQuery);
-  // }
+  if("searchQuery" in state){
+    searchQuery = decodeURIComponent(state.searchQuery);
+    if(searchQuery.length > 0){
+      init_search();
+    }
+  }
 }
 
 // function reset() {
@@ -704,9 +707,9 @@ function brush() {
 
   // free text search
   var query = d3.select("#search")[0][0].value;
-  if (query.length > 0) {
-    selected = search(selected, query);
-  }
+  // if (query.length > 0) {
+  selected = search(selected, query);
+  // }
 
   if (selected.length < data.length && selected.length > 0) {
     d3.select("#keep-data").attr("disabled", null);
@@ -878,9 +881,9 @@ function actives() {
 
   // free text search
   var query = d3.select("#search")[0][0].value;
-  if (query > 0) {
-    selected = search(selected, query);
-  }
+  // if (query > 0) {
+  selected = search(selected, query);
+  // }
 
   return selected;
 }
@@ -1119,8 +1122,59 @@ function search(selection,str) {
   // insertParam("searchQuery", searchQuery);
   //LOL Thisss needs restructured because we need a legit query builder not a temp search. Also this happens with each keystroke
   //so changing the url this way is terrible
-  pattern = new RegExp(str,"i")
+  //Step one, modify the query to take this string and the ones saved to the builder
+  //Step two, add the ability to save with the builder (separate function)
+  //Step three, add ability to remove with the builder (separate function)
+  //Step four, visualize the search query items with html though
+  var query = str;
+  if(str.length > 0){
+    if(searchQuery.length > 0){
+      query = searchQuery + "|" + str;
+    }
+  }
+  else{
+    if(searchQuery.length > 0){
+      query = searchQuery;
+    }
+  }
+  pattern = new RegExp(query,"i")
   return _(selection).filter(function(d) { return pattern.exec(d.mouse_sample); });
+}
+
+function addSearch(){
+  //do something about the html
+  var str = d3.select("#search")[0][0].value;
+  var e = $('<div id="' + str + '">' + str + '<i id="removeSearch" class="fa fa-minus-square-o" style="padding-left: 5px;" aria-hidden="true"></i></div>');
+  $('#query-list').append(e);
+  //Thisss could probably be better
+  d3.selectAll("#removeSearch").on("click", removeSearch);
+  d3.select("#search")[0][0].value = "";
+  //now handle the array and the state.
+  if(searchQuery.length > 0){
+    searchQuery = searchQuery + "|" + str;
+  }
+  else{
+    searchQuery = str;
+  }
+  insertParam("searchQuery", searchQuery);
+}
+
+function removeSearch(){
+  //do something about the html
+  var parent = $(this).parent(); 
+  var str = parent.text();
+  console.log("remove string: "+ str);
+  parent.remove();
+
+  //now handle the array and the state.
+  var arr = searchQuery.split("|");
+  var index = arr.indexOf(str);
+  if (index >= 0) {
+    arr.splice( index, 1 );
+  }
+  searchQuery = arr.join("|");
+  insertParam("searchQuery", searchQuery);
+  brush();
 }
 
 //OnReady Section
@@ -1211,6 +1265,8 @@ $( document ).ready(function() {
   d3.select("#log-scale").on("click", log_scale);
   d3.select("#linear-scale").on("click", linear_scale);
   d3.select("#reset").on("click", init_changeDataSource);
+  d3.select("#addSearch").on("click", addSearch);
+  d3.selectAll("#removeSearch").on("click", removeSearch);
 
   // initialize state for manual browsing actions
   window.addEventListener('popstate', function(event) {
