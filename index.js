@@ -68,6 +68,7 @@ var ticks = true,
   searchQuery = "";
 
 //Functions for Initializing State Section:
+//Parse the Url!
 function parseQueryString() {
   var query = (window.location.search || '?').substr(1),
       map   = {};
@@ -77,23 +78,10 @@ function parseQueryString() {
   return map;
 }
 
+//Create Column control section based on dimensions from csv file
+//This is called in update() because the csv needs to be loaded before this can be created
 function createColumns() {
-  // simple data table
-  // function data_table(sample) {
-  // var table = d3.select("#columnControl")
-  //   .html("")
-  //   .selectAll(".row")
-  //     .data(allDimensions)
-  //     .enter().append("li")
-  //     .attr("class", "ui-state-default checked")
-  //     .attr("id", "column");
-  // table
-  //   .text(function(d) {
-  //     if(dimensions.includes(d)){
-  //       $(this).attr("class", "ui-state-default")
-  //     }
-  //     return d; 
-  //   })
+  //Create the shown columns
   var table = d3.select("#columnControl")
   .html("")
   .selectAll(".row")
@@ -110,6 +98,7 @@ function createColumns() {
     excluded_columns = allDimensions.filter(function(item) {
       return dimensions.indexOf(item) === -1;
     });
+  //Create the previously removed columns
   table
     .data(excluded_columns)
     .enter().append("li")
@@ -125,24 +114,7 @@ function createColumns() {
   d3.selectAll("#column").on("click", toggleColumns);
 }
 
-  // function init_hide_ticks() {
-  //   d3.selectAll(".axis g").style("display", "none");
-  //   //d3.selectAll(".axis path").style("display", "none");
-  //   d3.selectAll(".background").style("visibility", "hidden");
-  //   d3.selectAll("#hide-ticks").attr("disabled", "disabled");
-  //   d3.selectAll("#show-ticks").attr("disabled", null);
-  //   ticks = false;
-  // };
-
-  // function init_show_ticks() {
-  //   d3.selectAll(".axis g").style("display", null);
-  //   //d3.selectAll(".axis path").style("display", null);
-  //   d3.selectAll(".background").style("visibility", null);
-  //   d3.selectAll("#show-ticks").attr("disabled", "disabled");
-  //   d3.selectAll("#hide-ticks").attr("disabled", null);
-  //   ticks = true;
-  // };
-
+//set the dark theme without touching url or state
 function init_dark_theme() {
   d3.select("body").attr("class", "dark");
   d3.selectAll("#dark-theme").attr("disabled", "disabled");
@@ -150,6 +122,7 @@ function init_dark_theme() {
   theme = "dark";
 }
 
+//set the light theme without touching url or state
 function init_light_theme() {
   d3.select("body").attr("class", null);
   d3.selectAll("#light-theme").attr("disabled", "disabled");
@@ -157,18 +130,25 @@ function init_light_theme() {
   theme = "light";
 }
 
+//set the log scale without touching url or state.
+//The currentScale will actually be used in update()
 function init_log_scale() {
   currentScale = "log";
   d3.selectAll("#linear-scale").attr("disabled", null);
   d3.selectAll("#log-scale").attr("disabled", true);
 }
 
+//set the linear scale without touching url or state.
+//The currentScale will actually be used in update()
 function init_linear_scale() {
   currentScale = "linear";
   d3.selectAll("#log-scale").attr("disabled", null);
   d3.selectAll("#linear-scale").attr("disabled", true);
 }
 
+//Change the data source without touching url or state.
+//This is used in many places to update the visualization
+//because it calls update() with the currently selected data source.
 function init_changeDataSource(){
   dataSource = $('#dataSources option:selected').text();
   if(dataSource =="Loading"){
@@ -178,6 +158,8 @@ function init_changeDataSource(){
   update(data1);
 }
 
+//Set up the Search by Sample Number current list of filters.
+//Assumes searchQuery has been initialized because it's only called from initialize()
 function init_search(){
   var arr = searchQuery.split('|');
   for(str in arr){
@@ -194,15 +176,18 @@ function initialize() {
   if("excluded_groups" in state){
     excluded_groups = decodeURIComponent(state.excluded_groups).split(",");
   }
+  //set dimensions to be used for columns
   if("dimensions" in state){
     dimensions = decodeURIComponent(state.dimensions).split(",");
   }
   else{
     dimensions = null;
   }
+  //set dataSource to load data from
   if("dataSource" in state){
     dataSource = state.dataSource;
   }
+  //set currentScale log or linear
   if("currentScale" in state){
     // currentScale = state.currentScale;
     if(state.currentScale == "log") {
@@ -215,6 +200,7 @@ function initialize() {
   else{
     init_linear_scale();
   }
+  //set ticks visiable or not
   if("ticks" in state){
     // console.log("ticks" + state.ticks)
     if(state.ticks == "false") {
@@ -230,7 +216,9 @@ function initialize() {
     // console.log("showing ticks");
     ticks = true;
   }
+  //load the visualization with the variables set above
   init_changeDataSource();
+  //set the theme, default to light
   if("theme" in state){
     // theme = state.theme;
     if(state.theme == "dark") {
@@ -243,6 +231,7 @@ function initialize() {
   else{
     init_light_theme();
   }
+  //set the search query
   if("searchQuery" in state){
     searchQuery = decodeURIComponent(state.searchQuery);
     if(searchQuery.length > 0){
@@ -251,15 +240,8 @@ function initialize() {
   }
 }
 
-// function reset() {
-//   //put back buttons for default
-// }
-
 //D3 Function Section
 function update(dataString){
-  // console.log("dataString");
-  // console.log(dataString);
-
   // Load the data and visualization
   d3.csv(dataString, function(raw_data) {
     // Convert quantitative scales to floats
@@ -364,8 +346,11 @@ function update(dataString){
 
           // TODO required to avoid a bug
           xscale.domain(dimensions);
+          //after drag and drop, update url
           insertParam("dimensions", dimensions.join(","));
+          //and remake column control
           createColumns();
+          //and update ticks
           update_ticks(d, extent);
 
           // rerender
@@ -610,25 +595,6 @@ function invert_axis(d) {
   }
   return extent;
 }
-
-// Draw a single polyline
-
-/*function path(d, ctx, color) {
-  console.log(d,ctx,color)
-  if (color) ctx.strokeStyle = color;
-  var x = xscale(0)-15;
-      y = yscale[dimensions[0]](d[dimensions[0]]);   // left edge
-  ctx.beginPath();
-  ctx.moveTo(x,y);
-  dimensions.map(function(p,i) {
-    x = xscale(p),
-    y = yscale[p](d[p]);
-    ctx.lineTo(x, y);
-  });
-  ctx.lineTo(x+15, y);                               // right edge
-  ctx.stroke();
-}*/
-
 
 function path(d, ctx, color) {
   if (color) ctx.strokeStyle = color;
@@ -961,7 +927,7 @@ function keep_data() {
   }
   data = new_data;
   rescale();
-}
+};
 
 // Exclude selected from the dataset
 function exclude_data() {
@@ -972,26 +938,17 @@ function exclude_data() {
   }
   data = new_data;
   rescale();
-}
-
-// function remove_axis(d,g) {
-//   dimensions = _.difference(dimensions, [d]);
-//   xscale.domain(dimensions);
-//   g.attr("transform", function(p) { return "translate(" + position(p) + ")"; });
-//   g.filter(function(p) { return p == d; }).remove();
-//   update_ticks();
-// }
+};
 
 //Util Function Section
-//Change Url
+//Insert key value pair into Url
+//This function is what adds it to the state and url
 function insertParam(key, value) {
   key = escape(key); value = escape(value);
 
   var kvp = document.location.search.substr(1).split('&');
   if (kvp == '') {
-      // document.location.search = '?' + key + '=' + value;
       var url = '?' + key + '=' + value;
-      // console.log(url);
       if (window && window.history) {
         window.history.pushState(null, null, url);
       }
@@ -1010,17 +967,15 @@ function insertParam(key, value) {
 
     if (i < 0) { kvp[kvp.length] = [key, value].join('='); }
 
-    // //this will reload the page, it's likely better to store this until finished
-    // document.location.search = kvp.join('&');
     var url = '?' + kvp.join('&');
-    // console.log(url);
     if (window && window.history) {
       window.history.pushState(null, null, url);
     }
   }
-}
+};
 
 //control fucntions Section
+//hide ticks and add it to state and url
 function hide_ticks() {
   d3.selectAll(".axis g").style("display", "none");
   //d3.selectAll(".axis path").style("display", "none");
@@ -1031,6 +986,7 @@ function hide_ticks() {
   insertParam("ticks", "false");
 };
 
+//show ticks and add it to state and url
 function show_ticks() {
   d3.selectAll(".axis g").style("display", null);
   //d3.selectAll(".axis path").style("display", null);
@@ -1041,38 +997,45 @@ function show_ticks() {
   insertParam("ticks", "true");
 };
 
+//turn on dark theme and add it to state and url
 function dark_theme() {
   d3.select("body").attr("class", "dark");
   d3.selectAll("#dark-theme").attr("disabled", "disabled");
   d3.selectAll("#light-theme").attr("disabled", null);
   theme = "dark";
   insertParam("theme", theme);
-}
+};
 
+//turn on dark theme and add it to state and url
 function light_theme() {
   d3.select("body").attr("class", null);
   d3.selectAll("#light-theme").attr("disabled", "disabled");
   d3.selectAll("#dark-theme").attr("disabled", null);
   theme = "light";
   insertParam("theme", theme);
-}
+};
 
+//change to log scale and add it to state and url
 function log_scale() {
   currentScale = "log";
   d3.selectAll("#linear-scale").attr("disabled", null);
   d3.selectAll("#log-scale").attr("disabled", true);
   insertParam("currentScale", currentScale);
+  //reload vis
   init_changeDataSource();
-}
+};
 
+//change to linear scale and add it to state and url
 function linear_scale() {
   currentScale = "linear";
   d3.selectAll("#log-scale").attr("disabled", null);
   d3.selectAll("#linear-scale").attr("disabled", true);
   insertParam("currentScale", currentScale);
+  //reload vis
   init_changeDataSource();
-}
+};
 
+//change data source and add it to state and url
 function changeDataSource(){
   dataSource = $('#dataSources option:selected').text();
   if(dataSource =="Loading"){
@@ -1081,23 +1044,31 @@ function changeDataSource(){
   var data1 = "data/" + dataSource;
   insertParam("dataSource", dataSource);
   update(data1);
-}
+};
 
+//if a column on the Column Control is clicked, enable or disable it.
+//This is only called for Column Control, not deleting on the vis
 function toggleColumns() {
+  //noclick is used because the column control dragging event triggers a click event,
+  //so this prevents toggling columns that are actually being reordered.
   if($(this).hasClass('noclick')){
     $(this).removeClass('noclick');
   }
   else{
+    //toggle the column
     if($(this).hasClass('checked')) { 
       $(this).removeClass('checked');
+      //add clicked column to the url, state, and vis
       add_axis($(this).text());
     } else { 
       $(this).addClass('checked');
+      //remove clicked column from the url, state, and vis
       remove_axis($(this).text());
     }
   }
-}
+};
 
+//remove column from the vis, the url, and the state
 function remove_axis(d) {
   var g = svg.selectAll(".dimension");
   // console.log("removing: " + d);
@@ -1110,8 +1081,9 @@ function remove_axis(d) {
   insertParam("dimensions", dimensions.join(","));
   // update_ticks();
   init_changeDataSource();
-}
+};
 
+//add column to the vis, the url, and the state
 function add_axis(d) {
   var g = svg.selectAll(".dimension");
   // console.log("adding: " + d);
@@ -1124,17 +1096,13 @@ function add_axis(d) {
   insertParam("dimensions", dimensions.join(","));
   // update_ticks();
   init_changeDataSource();
-}
+};
 
+//This is bound to the search bar in the Search by Sample Number
+//This function does the regex search of the str on the selection,
+//the str being the search query and the selection being the samples
+//searchQuery is a previously added search, added by the query builder to the state and url. 
 function search(selection,str) {
-  // searchQuery = str;
-  // insertParam("searchQuery", searchQuery);
-  //LOL Thisss needs restructured because we need a legit query builder not a temp search. Also this happens with each keystroke
-  //so changing the url this way is terrible
-  //Step one, modify the query to take this string and the ones saved to the builder
-  //Step two, add the ability to save with the builder (separate function)
-  //Step three, add ability to remove with the builder (separate function)
-  //Step four, visualize the search query items with html though
   var query = str;
   if(str.length > 0){
     if(searchQuery.length > 0){
@@ -1148,8 +1116,9 @@ function search(selection,str) {
   }
   pattern = new RegExp(query,"i")
   return _(selection).filter(function(d) { return pattern.exec(d.mouse_sample); });
-}
+};
 
+//Add a search for the Search by Sample Number to the state, url, and to the html list
 function addSearch(){
   //do something about the html
   var str = d3.select("#search")[0][0].value;
@@ -1166,8 +1135,9 @@ function addSearch(){
     searchQuery = str;
   }
   insertParam("searchQuery", searchQuery);
-}
+};
 
+//Remove a search for the Search by Sample Number from the state, url, and to the html list
 function removeSearch(){
   //do something about the html
   var parent = $(this).parent(); 
@@ -1184,7 +1154,7 @@ function removeSearch(){
   searchQuery = arr.join("|");
   insertParam("searchQuery", searchQuery);
   brush();
-}
+};
 
 //OnReady Section
 $( document ).ready(function() {
@@ -1217,7 +1187,7 @@ $( document ).ready(function() {
         dropdown.empty();
         dropdown.options(row);
         
-        //set up sortable
+        //set up sortable on the Column Control list
         $( function() {
           $( "#columnControl" ).sortable({
             // placeholder: "ui-state-highlight",
@@ -1239,7 +1209,7 @@ $( document ).ready(function() {
           $( "#columnControl" ).disableSelection();
         } );
         // initialize state on page load
-        initialize()  ;
+        initialize();
     }
   });
 
@@ -1310,6 +1280,4 @@ $( document ).ready(function() {
         render_value(event.state[0])
     }
   })
-
-   
 });
