@@ -910,11 +910,10 @@ function export_csv() {
   window.open("text/csv").document.write(styles + csv);
 }
 
-//TODO FIX THISSS
 // scale to window size
 window.onresize = function() {
   width = document.body.clientWidth,
-  height = d3.max([document.body.clientHeight-500, 220]);
+  height = d3.max([document.body.clientHeight-40, 220]);
 
   w = width - m[1] - m[3],
   h = height - m[0] - m[2];
