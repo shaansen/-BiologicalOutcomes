@@ -409,7 +409,7 @@ function update(dataString){
     // Add and store a brush for each axis.
     g.append("svg:g")
       .attr("class", "brush")
-      .each(function(d) {d3.select(this).call(yscale[d].brush = d3.svg.brush().y(yscale[d]).on("brush", brush)); })
+      .each(function(d) {d3.select(this).call(yscale[d].brush = d3.svg.brush().y(yscale[d]).on("brushstart", brushstart).on("brush", brush)); })
       .selectAll("rect")
       .style("visibility", null)
       .attr("x", -23)
@@ -445,6 +445,10 @@ function update(dataString){
 
   });
 
+}
+
+function brushstart() {
+  d3.event.sourceEvent.stopPropagation();
 }
 
 // copy one canvas to another, grayscale
