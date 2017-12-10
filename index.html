@@ -1,135 +1,139 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <html>
-    <meta charset="utf-8">
-    <head>
-        <link rel="stylesheet" href="css/style.css">
-        <link rel="stylesheet" href="css/font-awesome.min.css">
-        <!-- <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'> -->
-        <style>
-          #columnControl { list-style-type: none; margin: 0; padding: 0; width: 60%; }
-          #columnControl li { margin: 0 5px 5px 5px; font-size: 1em; height: 1em; }
-          html>body #columnControl li { height: 1em; line-height: 1em; }
-          .ui-state-highlight { height: 1.5em; line-height: 1.2em; }
-          ul li.checked {
-            background: #888;
-            color: #fff;
-            text-decoration: line-through;
-          }
-        </style>
-        <title>Biological Outcomes</title>
-    </head>
+		<meta charset="utf-8">
+		<head>
+				<link rel="stylesheet" href="css/style.css">
+				<link rel="stylesheet" href="css/font-awesome.min.css">
+				<!-- <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'> -->
+				<style>
+					#columnControl { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+					#columnControl li { margin: 0 5px 5px 5px; font-size: 1em; height: 1em; }
+					html>body #columnControl li { height: 1em; line-height: 1em; }
+					.ui-state-highlight { height: 1.5em; line-height: 1.2em; }
+					ul li.checked {
+						background: #888;
+						color: #fff;
+						text-decoration: line-through;
+					}
+				</style>
+				<title>Biological Outcomes</title>
+		</head>
 
-    <body>
-    	<nav>
-    		<h1>Visualization of Biological Outcomes</h1>
-        <hr>
-        <div class="controls">
-          <h3 class="accordion">Controls</h3>
-          <div class="panel">
-            <!-- <button title="Zoom in on selected data" id="keep-data" disabled="disabled">Keep</button>
-            <button title="Remove selected data" id="exclude-data" disabled="disabled">Exclude</button> -->
-            <button title="Export data as CSV" id="export-data">Export</button>
-            <strong id="rendered-count"></strong>/<strong id="selected-count"></strong>
-            <div class="fillbar">
-              <div id="selected-bar">
-                <div id="rendered-bar">&nbsp;
-                </div>
-              </div>
-            </div>
-            Lines at <strong id="opacity"></strong> opacity.
-            
-            <div>
-              Change Style<br>
-              <button id="hide-ticks" >Hide Ticks</button>
-              <button id="show-ticks" disabled="disabled" >Show Ticks</button>
-              <br>
-              <button id="dark-theme" >Dark Theme</button>
-              <button id="light-theme" disabled="disabled" >Light Theme</button>
-            </div>
+		<body>
+			<nav>
+				<h1>Visualization of Biological Outcomes</h1>
+				<hr>
 
-
-            <div>
-              Change Scale<br>
-              <button id="log-scale" >Log</button>
-              <button id="linear-scale" disabled=true>Linear</button>
-            </div>
+				<div class="controls">
+					<h3 class="accordion">Controls</h3>
+					<div class="panel">
+						<!-- <button title="Zoom in on selected data" id="keep-data" disabled="disabled">Keep</button>
+						<button title="Remove selected data" id="exclude-data" disabled="disabled">Exclude</button> -->
+						<button title="Export data as CSV" id="export-data">Export</button>
+						<strong id="rendered-count"></strong>/<strong id="selected-count"></strong>
+						<div class="fillbar">
+							<div id="selected-bar">
+								<div id="rendered-bar">&nbsp;
+								</div>
+							</div>
+						</div>
+						<div>
+							<button id='saveButton'>Export my D3 visualization to PNG</button>
+						</div>
+						Lines at <strong id="opacity"></strong> opacity.
+						
+						<div>
+							Change Style<br>
+							<button id="hide-ticks" >Hide Ticks</button>
+							<button id="show-ticks" disabled="disabled" >Show Ticks</button>
+							<br>
+							<button id="dark-theme" >Dark Theme</button>
+							<button id="light-theme" disabled="disabled" >Light Theme</button>
+						</div>
 
 
-            <div>
-              Select Data Source
-              <select class="controls-menu"  id="dataSources">
-                <option value="Loading">Loading</option>
-              </select>
-              <form id="form" method="post" enctype="multipart/form-data" action="/submit">
-                Upload New CSV
-                <input class="controls-menu" id="file-input" type="file" accept=".csv, text/csv" name="uploadFile" />
-                <input class="controls-menu" type="submit" value="Submit"><br>
-              </form>
-            </div>
-            <div>
-              Clear Filters<br>
-              <button id="reset">Clear</button>
-            </div>
-          </div>
-        </div>
+						<div>
+							Change Scale<br>
+							<button id="log-scale" >Log</button>
+							<button id="linear-scale" disabled=true>Linear</button>
+						</div>
 
 
-        <div style="clear:both;"></div>
+						<div>
+							Select Data Source
+							<select class="controls-menu"  id="dataSources">
+								<option value="Loading">Loading</option>
+							</select>
+							<form id="form" method="post" enctype="multipart/form-data" action="/submit">
+								Upload New CSV
+								<input class="controls-menu" id="file-input" type="file" accept=".csv, text/csv" name="uploadFile" />
+								<input class="controls-menu" type="submit" value="Submit"><br>
+							</form>
+						</div>
+						<div>
+							Clear Filters<br>
+							<button id="reset">Clear</button>
+						</div>
+					</div>
+				</div>
 
 
-        <div>
-          <hr>
-          <div  class="third">
-            <h3 class="accordion">Filter by Treatment/Tissue</h3>
-            <div class="panel">
-              <button id="deselect">Deselect All</button>
-              <button id="select" >Select All</button>
-              <p id="legend">
-              </p>
-            </div>
-          </div>
-          <hr>
-          <div  class="third">
-            <h3 class="accordion">Column Control</h3>
-            <div class="panel">
-              <ul id="columnControl">
-                <li id="column" class="ui-state-default">Loading</li>
-              </ul>
-            </div>
-          </div>
-          <div class="third">
-            <hr>
-            <h3 class="accordion">Search by Sample Number</h3>
-            <div class="panel">
-              <i id="addSearch" class="fa fa-plus-square-o fa-2x" style="padding-left: 5px;" aria-hidden="true"></i>
-              <input  class="controls-menuSearch" type="text" id="search" placeholder="Eg. 1-1L"></input>
-              <p id="query-list"></p>
-              <p id="sample-list">
-              </p>
-            </div>  
-          </div>
-        <div>
-      </nav>
-      <div class="viz">
-        <div id="chart">
-          <canvas id="background"></canvas>
-          <canvas id="foreground"></canvas>
-          <canvas id="highlight"></canvas>
-          <svg></svg>
-        </div>
-      </div>
+				<div style="clear:both;"></div>
 
-      <script src="d3.v3.min.js"></script>
-      <script src="d3-history.min.js"></script>
-      <script src="underscore.js"></script>
-      <script src="jquery-3.2.1.min.js"></script>
-      <script src="jquery-ui.min.js"></script>
-      <script src="index.js"></script>
-      <script>
-        
-      </script>
-      <div class="result" style="display: none">
-      </div>
-    </body>
+
+				<div>
+					<hr>
+					<div  class="third">
+						<h3 class="accordion">Filter by Treatment/Tissue</h3>
+						<div class="panel">
+							<button id="deselect">Deselect All</button>
+							<button id="select" >Select All</button>
+							<p id="legend">
+							</p>
+						</div>
+					</div>
+					<hr>
+					<div  class="third">
+						<h3 class="accordion">Column Control</h3>
+						<div class="panel">
+							<ul id="columnControl">
+								<li id="column" class="ui-state-default">Loading</li>
+							</ul>
+						</div>
+					</div>
+					<div class="third">
+						<hr>
+						<h3 class="accordion">Search by Sample Number</h3>
+						<div class="panel">
+							<i id="addSearch" class="fa fa-plus-square-o fa-2x" style="padding-left: 5px;" aria-hidden="true"></i>
+							<input  class="controls-menuSearch" type="text" id="search" placeholder="Eg. 1-1L"></input>
+							<p id="query-list"></p>
+							<p id="sample-list">
+							</p>
+						</div>  
+					</div>
+				<div>
+			</nav>
+			<div class="viz">
+				<div id="chart">
+					<canvas id="background"></canvas>
+					<canvas id="foreground"></canvas>
+					<canvas id="highlight"></canvas>
+					<svg></svg>
+				</div>
+			</div>
+			<script src="assets/d3-save-svg.min.js"></script>
+			<script src="d3.v3.min.js"></script>
+			<script src="d3-history.min.js"></script>
+			<script src="underscore.js"></script>
+			<script src="jquery-3.2.1.min.js"></script>
+			<script src="jquery-ui.min.js"></script>
+			<script src="index.js"></script>
+			<script>
+				
+			</script>
+			<div class="result" style="display: none">
+			</div>
+		</body>
 </html>
