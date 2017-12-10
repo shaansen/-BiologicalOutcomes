@@ -916,8 +916,8 @@ function export_csv() {
 
 // scale to window size
 window.onresize = function() {
-  width = document.body.clientWidth,
-  height = d3.max([document.body.clientHeight-40, 220]);
+  width = document.body.clientWidth-300,
+  height = d3.max([document.body.clientHeight-20, 240]);
 
   w = width - m[1] - m[3],
   h = height - m[0] - m[2];
