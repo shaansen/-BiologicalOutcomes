@@ -412,7 +412,7 @@ function update(dataString){
 			.attr("x", -23)
 			.attr("width", 36)
 			.append("title")
-			.text("Drag up or down to brush along this axis");
+			.text(function(d,i) {return d;});
 
 		g.selectAll(".extent")
 			.append("title")
@@ -730,6 +730,7 @@ function brush() {
 		d3.select("#keep-data").attr("disabled", "disabled");
 		d3.select("#exclude-data").attr("disabled", "disabled");
 	};
+
 
 
 	// total by food group
@@ -1300,7 +1301,6 @@ $( document ).ready(function() {
 	d3.select("#reset").on("click", init_changeDataSource);
 	d3.select("#addSearch").on("click", addSearch);
 	d3.selectAll("#removeSearch").on("click", removeSearch);
-
 	// initialize state for manual browsing actions
 	window.addEventListener('popstate', function(event) {
 		// reset()
@@ -1314,10 +1314,12 @@ $( document ).ready(function() {
 	})
 });
 
-// Set-up the export button
-d3.select('#saveButton').on('click', function() {
-  var config = {
-    filename: 'customFileName',
-  }
-  d3_save_svg.save(d3.select('svg').node(), config);
-});
+
+
+// // Set-up the export button
+// d3.select('#saveButton').on('click', function() {
+//   var config = {
+//     filename: 'customFileName',
+//   }
+//   d3_save_svg.save(d3.select('svg').node(), config);
+// });
