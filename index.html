@@ -30,6 +30,12 @@
 					<div class="panel">
 						<!-- <button title="Zoom in on selected data" id="keep-data" disabled="disabled">Keep</button>
 						<button title="Remove selected data" id="exclude-data" disabled="disabled">Exclude</button> -->
+						<div>
+							<strong>Undo/Redo Changes<br></strong>
+							<button onclick="goBack()">Undo</button>
+							<button onclick="goForward()">Redo</button>
+						</div>
+
 						<strong id="rendered-count"></strong>/<strong id="selected-count"></strong>
 						<div>
 							<div class="fillbar">
@@ -54,7 +60,7 @@
 
 						<div>
 							<strong>Change Scale<br></strong>
-							<button class="scaleButton" id="log-scale" >Log</button>
+							<button class="scaleButton" id="log-scale" >LogE</button>
 							<button class="scaleButton" id="log-scale2" >Log2</button>
 							<button class="scaleButton" id="linear-scale" disabled=true>Linear</button>
 						</div>
@@ -138,8 +144,13 @@
 			<script src="jquery-ui.min.js"></script>
 			<script src="index.js"></script>
 			<script>
-            
-        </script>
+				function goForward() {
+				    window.history.forward();
+				}
+				function goBack() {
+				    window.history.back();
+				}
+			</script>
 			<div class="result" style="display: none">
 			</div>
 		</body>
