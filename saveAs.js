@@ -10,6 +10,7 @@ window.saveAs || ( window.saveAs = (window.navigator.msSaveBlob ? function(b,n){
 
 	// URL's
 	window.URL || (window.URL = window.webkitURL);
+	console.log(window.URL)
 
 	if(!window.URL){
 		return false;
@@ -17,14 +18,15 @@ window.saveAs || ( window.saveAs = (window.navigator.msSaveBlob ? function(b,n){
 
 	return function(blob,name){
 		var url = URL.createObjectURL(blob);
+		console.log("URL",url)
 
 		// Test for download link support
 		if( "download" in document.createElement('a') ){
-
+			console.log("In download")
 			var a = document.createElement('a');
 			a.setAttribute('href', url);
 			a.setAttribute('download', name);
-
+			console.log("Event",event)
 			// Create Click event
 			var clickEvent = document.createEvent ("MouseEvent");
 			clickEvent.initMouseEvent ("click", true, true, window, 0, 
@@ -37,6 +39,7 @@ window.saveAs || ( window.saveAs = (window.navigator.msSaveBlob ? function(b,n){
 
 		}
 		else{
+			console.log("Not in download")
 			// fallover, open resource in new tab.
 			window.open(url, '_blank', '');
 		}

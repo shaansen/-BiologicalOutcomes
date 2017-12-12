@@ -30,21 +30,20 @@
 					<div class="panel">
 						<!-- <button title="Zoom in on selected data" id="keep-data" disabled="disabled">Keep</button>
 						<button title="Remove selected data" id="exclude-data" disabled="disabled">Exclude</button> -->
-						<button title="Export data as CSV" id="export-data">Export</button>
 						<strong id="rendered-count"></strong>/<strong id="selected-count"></strong>
-						<div class="fillbar">
-							<div id="selected-bar">
-								<div id="rendered-bar">&nbsp;
+						<div>
+							<div class="fillbar">
+								<div id="selected-bar">
+									<div id="rendered-bar">&nbsp;
+									</div>
 								</div>
 							</div>
+							<br>
+							Lines at <strong id="opacity"></strong> opacity.
 						</div>
+
 						<div>
-							<button id='saveButton'>Export my D3 visualization to PNG</button>
-						</div>
-						Lines at <strong id="opacity"></strong> opacity.
-						
-						<div>
-							Change Style<br>
+							<strong>Change Style<br></strong>
 							<button id="hide-ticks" >Hide Ticks</button>
 							<button id="show-ticks" disabled="disabled" >Show Ticks</button>
 							<br>
@@ -54,26 +53,31 @@
 
 
 						<div>
-							Change Scale<br>
+							<strong>Change Scale<br></strong>
 							<button id="log-scale" >Log</button>
 							<button id="linear-scale" disabled=true>Linear</button>
 						</div>
 
 
 						<div>
-							Select Data Source
+							<strong>Select Data Source</strong>
 							<select class="controls-menu"  id="dataSources">
 								<option value="Loading">Loading</option>
 							</select>
 							<form id="form" method="post" enctype="multipart/form-data" action="/submit">
-								Upload New CSV
+								<strong>Upload New CSV</strong>
 								<input class="controls-menu" id="file-input" type="file" accept=".csv, text/csv" name="uploadFile" />
 								<input class="controls-menu" type="submit" value="Submit"><br>
 							</form>
 						</div>
 						<div>
-							Clear Filters<br>
-							<button id="reset">Clear</button>
+							<strong>Export Data<br></strong>
+							<button class="btn example1">Export as SVG</button>
+							<button title="Export data as CSV" id="export-data">Export as CSV</button>
+						</div>
+						<div>
+							<strong>Clear Filters<br></strong>
+							<button id="reset" class="max-size">Clear</button>
 						</div>
 					</div>
 				</div>
@@ -95,7 +99,7 @@
 					</div>
 					<hr>
 					<div  class="third">
-						<h3 class="accordion">Column Control</h3>
+						<h3 class="accordion">Add/Remove Axes</h3>
 						<div class="panel">
 							<ul id="columnControl">
 								<li id="column" class="ui-state-default">Loading</li>
@@ -117,77 +121,24 @@
 			</nav>
 			<div class="viz">
 				<div id="chart">
-					<canvas id="background"></canvas>
-					<canvas id="foreground"></canvas>
-					<canvas id="highlight"></canvas>
-					<svg></svg>
+					<canvas class="bioviz" id="background"></canvas>
+					<canvas class="bioviz" id="foreground"></canvas>
+					<canvas class="bioviz" id="highlight"></canvas>
+					<svg class="bioviz"></svg>
 				</div>
 			</div>
 			<script src="assets/d3-save-svg.min.js"></script>
+ 			<script src="html2canvas.js"></script>
+ 			<script src="FileSaver.js"></script>
 			<script src="d3.v3.min.js"></script>
 			<script src="d3-history.min.js"></script>
 			<script src="underscore.js"></script>
 			<script src="jquery-3.2.1.min.js"></script>
 			<script src="jquery-ui.min.js"></script>
 			<script src="index.js"></script>
-			<script src="html2canvas.js"></script>
-			<script src="saveAs.js"></script>
 			<script>
-/**
- * Convert a base64 string in a Blob according to the data and contentType.
- * 
- * @param b64Data {String} Pure base64 string without contentType
- * @param contentType {String} the content type of the file i.e (image/jpeg - image/png - text/plain)
- * @param sliceSize {Int} SliceSize to process the byteCharacters
- * @see http://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
- * @return Blob
- */
-function b64toBlob(b64Data, contentType, sliceSize) {
-        contentType = contentType || '';
-        sliceSize = sliceSize || 512;
-
-        var byteCharacters = atob(b64Data);
-        var byteArrays = [];
-
-        for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-            var slice = byteCharacters.slice(offset, offset + sliceSize);
-
-            var byteNumbers = new Array(slice.length);
-            for (var i = 0; i < slice.length; i++) {
-                byteNumbers[i] = slice.charCodeAt(i);
-            }
-
-            var byteArray = new Uint8Array(byteNumbers);
-
-            byteArrays.push(byteArray);
-        }
-
-      var blob = new Blob(byteArrays, {type: contentType});
-      return blob;
-}
-
-// Generate screenshot and download
-$( "#saveButton" ).click(function() {
-html2canvas(document.body).then(function(canvas) {
-    // Generate the base64 representation of the canvas
-    var base64image = canvas.toDataURL("image/png");
-
-    // Split the base64 string in data and contentType
-    var block = base64image.split(";");
-    // Get the content type
-    var mimeType = block[0].split(":")[1];// In this case "image/png"
-    // get the real base64 content of the file
-    var realData = block[1].split(",")[1];// For example:  iVBORw0KGgouqw23....
-
-    // Convert b64 to blob and store it into a variable (with real base64 as value)
-    var canvasBlob = b64toBlob(realData, mimeType);
-
-    // Generate file download
-    window.saveAs(canvasBlob, "yourwebsite_screenshot.png");
-});
-
-});
-			</script>
+            
+        </script>
 			<div class="result" style="display: none">
 			</div>
 		</body>

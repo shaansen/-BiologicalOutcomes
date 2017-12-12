@@ -87,7 +87,8 @@ function createColumns() {
 	.html("")
 	.selectAll(".row")
 		.data(dimensions)
-		.enter().append("li")
+		.enter()
+		.append("li")
 		.attr("class", "ui-state-default")
 		.attr("id", "column")
 		.attr("value", function(d) {
@@ -1314,12 +1315,15 @@ $( document ).ready(function() {
 	})
 });
 
-
-
-// // Set-up the export button
-// d3.select('#saveButton').on('click', function() {
-//   var config = {
-//     filename: 'customFileName',
-//   }
-//   d3_save_svg.save(d3.select('svg').node(), config);
-// });
+$(".example1").on("click", function(event) {
+    event.preventDefault();
+    // var viz = document.getElementsByClassName("bioviz")
+    html2canvas(document.body, {
+        onrendered: function(canvas) {
+        	canvas.toBlob(function(blob) {
+					    saveAs(blob, "pretty image.png");
+					});
+            // document.body.appendChild(canvas);
+        }
+    });
+});

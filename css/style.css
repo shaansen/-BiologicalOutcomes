@@ -251,6 +251,8 @@ nav {
   margin: 0;
   padding: 1em;
   background-color: silver;
+  max-height: 100vh;
+  overflow-y:auto
 }
 
 .dark nav {
@@ -265,6 +267,7 @@ nav {
     border-left: 1px solid gray;
     padding: 1em;
     overflow: hidden;
+    background-color: white;
 }
 
 button {
@@ -272,6 +275,15 @@ button {
   float: right;
   width: 50%;
   font-family: Poppins, sans-serif;
+  
+}
+
+.max-size {
+  font-size: 10px;
+  float: right;
+  width: 100%;
+  font-family: Poppins, sans-serif;
+  
 }
 
 .controls-menu {
@@ -310,4 +322,9 @@ div.panel {
     padding: 0 9px;
     /* background-color: white; */
     display: none;
+}
+
+.subcontrol {
+  padding-top: 10px;
+  padding-bottom: 20px; 
 }
