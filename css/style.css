@@ -129,7 +129,8 @@ button[disabled=disabled] {
   display: none;
 }
 .dark button[disabled=disabled] {
-  opacity: 0.2;
+  opacity: 0.5;
+  color: white;
 }
 button#keep-data,
 button#exclude-data {
@@ -267,7 +268,7 @@ nav {
     border-left: 1px solid gray;
     padding: 1em;
     overflow: hidden;
-    background-color: white;
+    
 }
 
 button {
@@ -283,8 +284,16 @@ button {
   float: right;
   width: 100%;
   font-family: Poppins, sans-serif;
-  
 }
+
+
+.scaleButton {
+  font-size: 10px;
+  float: right;
+  width: 33.33%;
+  font-family: Poppins, sans-serif;
+}
+
 
 .controls-menu {
   font-size: 10px;

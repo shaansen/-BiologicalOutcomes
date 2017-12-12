@@ -130,6 +130,7 @@ function init_light_theme() {
 function init_log_scale() {
 	currentScale = "log";
 	d3.selectAll("#linear-scale").attr("disabled", null);
+	d3.selectAll("#log-scale2").attr("disabled", null);
 	d3.selectAll("#log-scale").attr("disabled", true);
 }
 
@@ -138,8 +139,19 @@ function init_log_scale() {
 function init_linear_scale() {
 	currentScale = "linear";
 	d3.selectAll("#log-scale").attr("disabled", null);
+	d3.selectAll("#log-scale2").attr("disabled", null);
 	d3.selectAll("#linear-scale").attr("disabled", true);
 }
+
+
+function init_log_scale2() {
+	currentScale = "linear";
+	d3.selectAll("#log-scale").attr("disabled", null);
+	d3.selectAll("#linear-scale").attr("disabled", null);
+	d3.selectAll("#log-scale2").attr("disabled", true);
+}
+
+
 
 //Change the data source without touching url or state.
 //This is used in many places to update the visualization
@@ -200,6 +212,10 @@ function initialize() {
 		if(state.currentScale == "linear"){
 			init_linear_scale();
 		}
+		if(state.currentScale == "log2"){
+			init_log_scale2();
+		}
+
 	}
 	else{
 		init_linear_scale();
@@ -272,6 +288,19 @@ function update(dataString){
 							.range([h, 0]));
 					}
 				}).sort());
+			} else if(currentScale == "log"){
+				xscale.domain(dimensions = d3.keys(data[0]).filter(function(k) {
+					if(inverted_columns.includes(k)){
+						return (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.log()
+							.domain(d3.extent(data, function(d) { return +d[k]; }))
+							.range([0, h])) && (yscale[k].inverted = true);
+					}
+					else{
+						return (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.log()
+							.domain(d3.extent(data, function(d) { return +d[k]; }))
+							.range([h, 0]));
+					}
+				}).sort());
 			}
 			else{
 				xscale.domain(dimensions = d3.keys(data[0]).filter(function(k) {
@@ -300,6 +329,23 @@ function update(dataString){
 					}
 					else{
 						return (dimensions.includes(k)) && (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.linear()
+							.domain(d3.extent(data, function(d) { return +d[k]; }))
+							.range([h, 0]));
+					}
+				}).sort(function(a, b){
+					return oldDimensions.indexOf(a)-oldDimensions.indexOf(b);
+			}));
+			}
+			else if(currentScale == "log"){
+				var oldDimensions = $.extend(true, [], dimensions);
+				xscale.domain(dimensions = d3.keys(data[0]).filter(function(k) {
+					if(inverted_columns.includes(k)){
+						return (dimensions.includes(k)) && (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.log()
+							.domain(d3.extent(data, function(d) { return +d[k]; }))
+							.range([0, h])) && (yscale[k].inverted = true);
+					}
+					else{
+						return (dimensions.includes(k)) && (_.isNumber(data[0][k])) && (yscale[k] = d3.scale.log()
 							.domain(d3.extent(data, function(d) { return +d[k]; }))
 							.range([h, 0]));
 					}
@@ -850,6 +896,11 @@ function rescale() {
 						.domain(d3.extent(data, function(p) { return +p[d]; }))
 						.range([0, h]);
 			}
+			else if(currentScale == "log"){
+				yscale[d] = d3.scale.log()
+						.domain(d3.extent(data, function(p) { return +p[d]; }))
+						.range([0, h]);
+			}
 			else{
 				yscale[d] = d3.scale.log().base(2)
 						.domain(d3.extent(data, function(p) { return +p[d]; }))
@@ -859,6 +910,11 @@ function rescale() {
 		} else {
 			if(currentScale == "linear"){
 				yscale[d] = d3.scale.linear()
+						.domain(d3.extent(data, function(p) { return +p[d]; }))
+						.range([h, 0]);
+			}
+			else if(currentScale == "log"){
+				yscale[d] = d3.scale.log()
 						.domain(d3.extent(data, function(p) { return +p[d]; }))
 						.range([h, 0]);
 			}
@@ -1057,7 +1113,19 @@ function light_theme() {
 function log_scale() {
 	currentScale = "log";
 	d3.selectAll("#linear-scale").attr("disabled", null);
+	d3.selectAll("#log-scale2").attr("disabled", null);
 	d3.selectAll("#log-scale").attr("disabled", true);
+	insertParam("currentScale", currentScale);
+	//reload vis
+	init_changeDataSource();
+};
+
+//change to log scale and add it to state and url
+function log_scale2() {
+	currentScale = "log2";
+	d3.selectAll("#linear-scale").attr("disabled", null);
+	d3.selectAll("#log-scale").attr("disabled", null);
+	d3.selectAll("#log-scale2").attr("disabled", true);
 	insertParam("currentScale", currentScale);
 	//reload vis
 	init_changeDataSource();
@@ -1067,6 +1135,7 @@ function log_scale() {
 function linear_scale() {
 	currentScale = "linear";
 	d3.selectAll("#log-scale").attr("disabled", null);
+	d3.selectAll("#log-scale2").attr("disabled", null);
 	d3.selectAll("#linear-scale").attr("disabled", true);
 	insertParam("currentScale", currentScale);
 	//reload vis
@@ -1297,6 +1366,7 @@ $( document ).ready(function() {
 	d3.select("#show-ticks").on("click", show_ticks);
 	d3.select("#dark-theme").on("click", dark_theme);
 	d3.select("#light-theme").on("click", light_theme);
+	d3.select("#log-scale2").on("click", log_scale2);
 	d3.select("#log-scale").on("click", log_scale);
 	d3.select("#linear-scale").on("click", linear_scale);
 	d3.select("#reset").on("click", init_changeDataSource);
